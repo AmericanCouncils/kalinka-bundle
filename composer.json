@@ -1,5 +1,5 @@
 {
-    "name": "davidmikesimon/kalinka-bundle",
+    "name": "ac/kalinka-bundle",
     "version": "0.1.0",
     "description": "Flexible authorization for your Symfony2 app",
     "keywords": ["auth", "authorization", "kalinka"],
