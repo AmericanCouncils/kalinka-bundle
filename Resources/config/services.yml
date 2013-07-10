@@ -1,0 +1,3 @@
+services:
+    kalinka.authorizer_factory:
+        class: AC\KalinkaBundle\AuthorizerFactory
