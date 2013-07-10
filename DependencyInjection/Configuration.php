@@ -37,11 +37,11 @@ class Configuration implements ConfigurationInterface
                             ->arrayNode('roles')
                                 ->useAttributeAsKey('key') // Role
                                 ->prototype('array')
+                                    ->useAttributeAsKey('key') // Object type
                                     ->children()
-                                        ->useAttributeAsKey('key') // Object type
                                         ->prototype('array')
+                                            ->useAttributeAsKey('key') // Action type
                                             ->children()
-                                                ->useAttributeAsKey('key') // Action type
                                                 ->prototype('variable') // Policy/policies
                                                     ->end()
                                                 ->end()

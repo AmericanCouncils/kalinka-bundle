@@ -24,6 +24,7 @@ class KalinkaExtension extends Extension
                 'AC\KalinkaBundle\AuthorizerContainer',
                 [
                     $authConf,
+                    // TODO: Make these references configurable
                     new Reference('kalinka.authorizer_factory'),
                     new Reference('security.context'),
                     new Reference('container')
