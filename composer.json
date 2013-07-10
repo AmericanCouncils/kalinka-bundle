@@ -1,8 +1,8 @@
 {
-    "name": "davidmikesimon/fiendish-bundle",
+    "name": "davidmikesimon/kalinka-bundle",
     "version": "0.1.0",
-    "description": "Background daemons for your Symfony2 app",
-    "keywords": ["daemon", "supervisor"],
+    "description": "Flexible authorization for your Symfony2 app",
+    "keywords": ["auth", "authorization", "kalinka"],
     "type": "symfony-bundle",
     "license": "MIT",
     "authors": [
@@ -13,21 +13,10 @@
     ],
     "require": {
         "symfony/symfony": "2.*",
-        "doctrine/orm": ">=2.2.3,<2.4-dev",
-        "doctrine/doctrine-bundle": "*",
-        "doctrine/migrations": "*",
-        "doctrine/doctrine-migrations-bundle": "*",
-        "symfony/framework-bundle": "2.*",
-        "symfony/console": "2.*",
-        "sensio/distribution-bundle": "2.*",
-        "sensio/framework-extra-bundle": "2.*",
-        "sensio/generator-bundle": "2.*",
-        "mondalaci/supervisor-client": "dev-master",
-        "oldsound/rabbitmq-bundle": "dev-master",
-        "videlalvaro/php-amqplib": "*"
+        "ac/kalinka": "dev-master"
     },
     "autoload": {
-        "psr-0": { "AC\\FiendishBundle": "" }
+        "psr-0": { "AC\\KalinkaBundle": "" }
     },
-    "target-dir": "AC/FiendishBundle"
+    "target-dir": "AC/KalinkaBundle"
 }
