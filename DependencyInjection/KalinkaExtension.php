@@ -26,7 +26,7 @@ class KalinkaExtension extends Extension
                     $authConf,
                     new Reference('kalinka.authorizer_factory'),
                     new Reference('security.context'),
-                    new Reference('container')
+                    new Reference('service_container')
                 ]
             );
             $container->setDefinition("kalinka.authorizer_containers.$name", $def);

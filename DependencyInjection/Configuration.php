@@ -36,19 +36,23 @@ class Configuration implements ConfigurationInterface
                                 ->end()
                             ->arrayNode('roles')
                                 ->useAttributeAsKey('key') // Role
-                                ->prototype('array')
-                                    ->children()
-                                        ->useAttributeAsKey('key') // Object type
-                                        ->prototype('array')
-                                            ->children()
-                                                ->useAttributeAsKey('key') // Action type
-                                                ->prototype('variable') // Policy/policies
-                                                    ->end()
-                                                ->end()
-                                            ->end()
-                                        ->end()
-                                    ->end()
-                                ->end()
+                                ->prototype('variable') // TEMPORARY HACK
+                                // TODO: Fix the explicit spec below and use it instead
+                                /*
+                                 *->prototype('array')
+                                 *    ->useAttributeAsKey('key') // Object type
+                                 *    ->children()
+                                 *        ->prototype('array')
+                                 *            ->useAttributeAsKey('key') // Action type
+                                 *            ->children()
+                                 *                ->prototype('variable') // Policy/policies
+                                 *                    ->end()
+                                 *                ->end()
+                                 *            ->end()
+                                 *        ->end()
+                                 *    ->end()
+                                 *->end()
+                                 */
                             ->end()
                         ->end()
                     ->end()
