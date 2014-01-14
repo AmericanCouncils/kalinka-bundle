@@ -12,8 +12,14 @@
         }
     ],
     "require": {
-        "symfony/symfony": "2.*",
+        "symfony/framework-bundle": "~2.2",
+        "symfony/security": "~2.2",
         "ac/kalinka": "dev-master"
+    },
+    "require-dev": {
+        "symfony/symfony": "~2.2",
+        "jms/serializer-bundle": "0.12.0",
+        "sensio/framework-extra-bundle": "~2.2"
     },
     "autoload": {
         "psr-0": { "AC\\KalinkaBundle": "" }
