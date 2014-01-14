@@ -1,0 +1,39 @@
+framework:
+    secret:          secretslol
+    router:          { resource: "@FixtureBundle/Resources/routing.yml" }
+    form:            true
+    csrf_protection: true
+    session:         ~
+    default_locale:  en
+    translator:      { fallback: en }
+    profiler:        { only_exceptions: false }
+    test: ~
+    templating:
+        cache: ~
+        engines: [php]
+    annotations:
+        cache:                file
+        file_cache_dir:       %kernel.cache_dir%/annotations
+        debug:                %kernel.debug%
+
+sensio_framework_extra:
+    router:  { annotations: true }
+    #request: { converters: true }
+    #view:    { annotations: true }
+    cache:   { annotations: true }
+
+jms_serializer:
+    handlers:
+        datetime:
+            default_format: "Y-m-dTH:i:s" # ISO8601
+            default_timezone: "UTC" # defaults to whatever timezone set in php.ini or via date_default_timezone_set
+    property_naming:
+        separator:
+        lower_case: true
+    metadata:
+        cache: file
+        debug: "%kernel.debug%"
+        file_cache:
+            dir: "%kernel.cache_dir%/serializer"
+        auto_detection: true
+
