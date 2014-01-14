@@ -37,3 +37,5 @@ jms_serializer:
             dir: "%kernel.cache_dir%/serializer"
         auto_detection: true
 
+#kalinka:
+#    foo: 'bar'
