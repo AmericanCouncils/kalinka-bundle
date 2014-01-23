@@ -9,6 +9,6 @@ class AuthorizerFactory
 {
     public function buildRoleAuthorizer(UserInterface $user)
     {
-       return new RoleAuthorizer($user, $user->getRoles()); 
+       return new RoleAuthorizer($user, $user->getRoles());
     }
 }

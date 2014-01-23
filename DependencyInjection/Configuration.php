@@ -11,8 +11,11 @@ class Configuration implements ConfigurationInterface
     {
         $t = new TreeBuilder();
 
-        $t->root('kalinka')
+        $t->root('ac_kalinka')
             ->children()
+                ->variableNode('roles')
+                    //TODO: real validation of this
+                ->end()
                 ->arrayNode('authorizers')
                     ->useAttributeAsKey('key')
                     ->requiresAtLeastOneElement()

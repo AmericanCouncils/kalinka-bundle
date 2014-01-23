@@ -9,7 +9,7 @@ use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
 use Symfony\Component\HttpKernel\DependencyInjection\Extension;
 use Symfony\Component\Config\FileLocator;
 
-class KalinkaExtension extends Extension
+class ACKalinkaExtension extends Extension
 {
     public function load(array $configs, ContainerBuilder $container)
     {
@@ -19,7 +19,9 @@ class KalinkaExtension extends Extension
         $configuration = new Configuration();
         $config = $this->processConfiguration($configuration, $configs);
 
-        foreach($config['authorizers'] as $name => $authConf) {
+        $container->setParameter('kalinka.role_map', $config['roles']);
+
+        foreach ($config['authorizers'] as $name => $authConf) {
             $def = new Definition(
                 'AC\KalinkaBundle\AuthorizerContainer',
                 [
@@ -38,6 +40,6 @@ class KalinkaExtension extends Extension
 
     public function getAlias()
     {
-        return "kalinka";
+        return "ac_kalinka";
     }
 }

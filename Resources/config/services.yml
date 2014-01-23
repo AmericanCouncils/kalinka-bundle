@@ -1,3 +1,4 @@
 services:
-    kalinka.authorizer_factory:
-        class: AC\KalinkaBundle\AuthorizerFactory
+    kalinka.authorizer:
+        class: AC\KalinkaBundle\ContainerAwareRoleAuthorizer
+        arguments: [@security.context, @service_container, %kalinka.role_map%]

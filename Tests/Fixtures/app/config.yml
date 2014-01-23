@@ -16,6 +16,14 @@ framework:
         file_cache_dir:       %kernel.cache_dir%/annotations
         debug:                %kernel.debug%
 
+security:
+    firewalls:
+        anonymous:
+            anonymous: ~
+    providers:
+        in_memory:
+            memory:
+
 sensio_framework_extra:
     router:  { annotations: true }
     #request: { converters: true }
@@ -37,5 +45,45 @@ jms_serializer:
             dir: "%kernel.cache_dir%/serializer"
         auto_detection: true
 
-#kalinka:
-#    foo: 'bar'
+services:
+    app.guard.system:
+        class: AC\KalinkaBundle\Tests\Fixtures\FixtureBundle\Auth\DocumentGuard
+        tags:
+            - { name: kalinka.guard, tag: 'system', actions: 'foo,bar,baz' }
+
+    app.guard.document:
+        class: AC\KalinkaBundle\Tests\Fixtures\FixtureBundle\Auth\DocumentGuard
+        tags:
+            - { name: kalinka.guard, tag: 'document', actions: 'index,create,read,update,delete' }
+
+ac_kalinka:
+    roles:
+        anonymous:
+            system: ~
+            document:
+                read: 'allow'
+        admin:
+            system:
+                foo: 'allow'
+                bar: 'allow'
+                baz: 'allow'
+            document:
+                index: 'allow'
+                create: 'allow'
+                read: 'allow'
+                update: 'allow'
+                delete: 'allow'
+        student:
+            system: ~
+            document:
+                index: 'allow'
+                read: 'allow'
+        teacher:
+            system:
+                foo: 'allow'
+            document:
+                index: 'allow'
+                create: 'allow'
+                read: 'allow'
+                update: ['owner', 'unlocked']
+                delete: ['owner', 'unlocked']

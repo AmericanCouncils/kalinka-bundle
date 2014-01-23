@@ -21,7 +21,7 @@ class AuthorizerContainer
         $this->securityContext = $securityContext;
 
         foreach ($config['objects'] as $name => $objConf) {
-            $this->guardMap[$docName] = function() {
+            $this->guardMap[$docName] = function () {
                 return $container->get($objConf['guard']);
             };
             $this->actionMap[$docName] = $objConf['actions'];
@@ -47,6 +47,7 @@ class AuthorizerContainer
         $a->registerRoleExclusions($user->getRoleExclusions());
 
         $this->authorizerCache[$username] = $a;
+
         return a;
     }
 }
