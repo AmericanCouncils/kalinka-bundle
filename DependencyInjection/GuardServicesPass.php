@@ -17,8 +17,7 @@ class GuardServicesPass implements CompilerPassInterface
             foreach ($tagAttrs as $attrs) {
                 $authorizerService->addMethodCall('registerGuardService',[
                     $id,
-                    $attrs['tag'],
-                    explode(',', $attrs['actions'])
+                    $attrs['tag']
                 ]);
             }
         }

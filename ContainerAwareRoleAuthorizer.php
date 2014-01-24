@@ -13,44 +13,43 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 class ContainerAwareRoleAuthorizer extends RoleAuthorizer
 {
     private $container;
-    private $guardMap;
-    private $roleMap;
-    private $user;
+    private $guardMap = [];
     private $loadedTypes = [];
 
-    public function __construct(SecurityContextInterface $context, ContainerInterface $container, $roleMap = array(), $guardMap = array())
+    public function __construct(SecurityContextInterface $context, ContainerInterface $container, $rolePolicies = [], $guardMap = [])
     {
         $this->container = $container;
-        $this->user = $context->getToken()->getUser();
-        $this->roleMap = $roleMap;
         $this->guardMap = $guardMap;
+
+        $subject = null;
+        $roles = [];
+
+        if ($context->getToken()) {
+            $subject = $context->getToken()->getUser();
+            $roles = $subject->getRoles();
+        }
+
+        parent::__construct($subject, $roles);
+
+        $this->registerRolePolicies($rolePolicies);
     }
 
     public function can($action, $resType, $guardObject = null)
     {
         if (!isset($this->loadedTypes[$resType])) {
             if (isset($this->guardMap[$resType])) {
-                $data = $this->guardMap[$resType];
-                $guard = $this->container->get($data['serviceId']);
+                $guard = $this->container->get($this->guardMap[$resType]);
+                $this->registerGuard($resType, $guard);
 
-                //TODO: this isn't part of the GuardInterface, but it should be
-                $this->registerGuard($data[$resType], $guard);
+                $this->loadedTypes[$resType] = true;
             }
         }
 
         return parent::can($action, $resType, $guardObject);
     }
 
-    public function registerRoleMap($role, array $map)
+    public function registerGuardService($serviceId, $tag)
     {
-        $this->roleMap[$role] = $map;
-    }
-
-    public function registerGuardService($serviceId, $tag, array $actions)
-    {
-        $this->guardMap[$tag] = [
-            'serviceId' => $serviceId,
-            'actions' => $actions
-        ];
+        $this->guardMap[$tag] = $serviceId;
     }
 }

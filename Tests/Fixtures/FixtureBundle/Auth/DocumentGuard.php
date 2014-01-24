@@ -2,11 +2,15 @@
 
 namespace AC\KalinkaBundle\Tests\Fixtures\FixtureBundle\Auth;
 
-use Kalinka\GuardInterface;
-use Kalinka\Guard\BaseGuard;
+use AC\Kalinka\Guard\BaseGuard;
 
 class DocumentGuard extends BaseGuard
 {
+    public function getActions()
+    {
+        return ['index','create','read','update','delete'];
+    }
+
     public function policyOwner($subj, $obj = null) { return $subj->getId() == $obj->ownerId; }
 
     public function policyUnlocked($subj, $obj) { return !$obj->locked(); }

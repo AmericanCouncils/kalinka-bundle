@@ -2,15 +2,18 @@
 
 namespace AC\KalinkaBundle\Tests\Fixtures\FixtureBundle\Auth;
 
-use Kalinka\GuardInterface;
-use Kalinka\Guard\BaseGuard;
+use AC\Kalinka\Guard\BaseGuard;
 
 class AppGuard extends BaseGuard
 {
+    public function getActions()
+    {
+        return ['foo','bar','baz'];
+    }
 
     public function policyFoo($subj, $obj = null) { return false; }
 
-    public function policyBar($subj, $obj) { return true; }
+    public function policyBar($subj, $obj = null) { return true; }
 
-    public function policyBaz($subj, $obj) { return true; }
+    public function policyBaz($subj, $obj = null) { return true; }
 }

@@ -23,6 +23,8 @@ security:
     providers:
         in_memory:
             memory:
+                users:
+                    test: { password: test, roles: ['admin'] }
 
 sensio_framework_extra:
     router:  { annotations: true }
@@ -47,19 +49,18 @@ jms_serializer:
 
 services:
     app.guard.system:
-        class: AC\KalinkaBundle\Tests\Fixtures\FixtureBundle\Auth\DocumentGuard
+        class: AC\KalinkaBundle\Tests\Fixtures\FixtureBundle\Auth\AppGuard
         tags:
-            - { name: kalinka.guard, tag: 'system', actions: 'foo,bar,baz' }
+            - { name: kalinka.guard, tag: 'system' }
 
     app.guard.document:
         class: AC\KalinkaBundle\Tests\Fixtures\FixtureBundle\Auth\DocumentGuard
         tags:
-            - { name: kalinka.guard, tag: 'document', actions: 'index,create,read,update,delete' }
+            - { name: kalinka.guard, tag: 'document' }
 
 ac_kalinka:
     roles:
         anonymous:
-            system: ~
             document:
                 read: 'allow'
         admin:
@@ -74,7 +75,6 @@ ac_kalinka:
                 update: 'allow'
                 delete: 'allow'
         student:
-            system: ~
             document:
                 index: 'allow'
                 read: 'allow'
