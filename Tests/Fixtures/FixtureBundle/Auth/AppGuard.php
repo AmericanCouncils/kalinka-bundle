@@ -11,9 +11,9 @@ class AppGuard extends BaseGuard
         return ['foo','bar','baz'];
     }
 
-    public function policyFoo($subj, $obj = null) { return false; }
+    public function policyFoo($subj, $obj = null) { return true; }
 
     public function policyBar($subj, $obj = null) { return true; }
 
-    public function policyBaz($subj, $obj = null) { return true; }
+    public function policyBaz($subj, $obj = null) { return false; }
 }

@@ -10,71 +10,126 @@ use AC\KalinkaBundle\Tests\Fixtures\FixtureBundle\Model as Fixtures;
 class ContainerAwareRoleAuthorizerTest extends WebTestCase
 {
     protected $container;
+    protected $client;
 
     /**
-     * Setup puts the container in a state as if it were handling an active request.
-     *
-     * This is needed to force the `security.context` service to actually be able to derive a user.
+     * Populates container as it would be during a request from a specific user.
      */
-    public function setUp()
+    protected function loginAs($name, $pass = null)
     {
-        $kernel = static::createKernel();
-        $kernel->boot();
-        $container = $this->container = $kernel->getContainer();
+        $pass = $pass ? $pass : $name;
 
-        //force container into request scope by faking the request and session as test user
-        $container->enterScope('request');
-        $request = Request::create('GET', '/hello-world', [], [], [], [
-            'PHP_AUTH_USER' => 'test',
-            'PHP_AUTH_PW' => 'test'
+        $this->client = $client = static::createClient([], [
+            'PHP_AUTH_USER' => $name,
+            'PHP_AUTH_PW' => $pass
         ]);
-        $session = $this->getMock('Symfony\Component\HttpFoundation\Session\SessionInterface');
-        $request->setSession($session);
-        $container->set('request', $request);
-    }
 
-    public function tearDown()
-    {
-        $this->container->leaveScope('request');
+        //test request forces container into "request" scope with
+        //a populated security.context token
+        $this->client->request('GET', '/hello-world');
+
+        $this->container = $client->getContainer();
     }
 
     public function testGetAuthorizerService()
     {
+        $this->loginAs('admin');
         $authorizer = $this->container->get('kalinka.authorizer');
 
         $this->assertTrue($authorizer instanceof ContainerAwareRoleAuthorizer);
     }
 
-    public function testCallAuthorizerWithAdminUser()
+    public function testCallAuthorizerAsAdmin()
     {
+        $this->loginAs('admin');
         $auth = $this->container->get('kalinka.authorizer');
 
         $this->assertTrue($auth->can('foo', 'system'));
         $this->assertTrue($auth->can('bar', 'system'));
         $this->assertTrue($auth->can('baz', 'system'));
 
-
         $doc = Fixtures\Document::createFromArray([
-            'ownerId' => 1,
+            'ownerName' => 1,
             'title' => 'Foo',
-            'content' => "Barzinbaz"
+            'content' => "Barzinbaz",
+            'locked' => true
         ]);
 
         $this->assertTrue($auth->can('index', 'document', $doc));
+        $this->assertTrue($auth->can('create', 'document', $doc));
+        $this->assertTrue($auth->can('read', 'document', $doc));
+        $this->assertTrue($auth->can('update', 'document', $doc));
+        $this->assertTrue($auth->can('delete', 'document', $doc));
     }
 
-    public function testCallAuthorizerWithStudentUser()
+    public function testCallAuthorizerAsTeacher()
     {
-        $this->markTestSkipped();
-        $user = $this->container->get('security.context')->getToken()->getUser();
-        $user->setRoles(['teacher','student']);
+        $this->loginAs('teacher');
+        $auth = $this->container->get('kalinka.authorizer');
 
         $this->assertTrue($auth->can('foo', 'system'));
-        $this->assertTrue($auth->can('bar', 'system'));
-        $this->assertTrue($auth->can('baz', 'system'));
+        $this->assertFalse($auth->can('bar', 'system'));
+        $this->assertFalse($auth->can('baz', 'system'));
+
+        //owner, but locked
+        $doc = Fixtures\Document::createFromArray([
+            'ownerName' => 'teacher',
+            'locked' => true
+        ]);
+        $this->assertTrue($auth->can('index', 'document', $doc));
+        $this->assertTrue($auth->can('create', 'document', $doc));
+        $this->assertTrue($auth->can('read', 'document', $doc));
+        $this->assertFalse($auth->can('update', 'document', $doc));
+        $this->assertFalse($auth->can('delete', 'document', $doc));
+
+        //owner and unlocked
+        $doc = Fixtures\Document::createFromArray([
+            'ownerName' => 'teacher',
+            'locked' => false
+        ]);
+        $this->assertTrue($auth->can('update', 'document', $doc));
+        $this->assertTrue($auth->can('delete', 'document', $doc));
+
+        //unlocked, but not owner
+        $doc = Fixtures\Document::createFromArray([
+            'ownerName' => 'Foobert',
+            'locked' => false
+        ]);
+        $this->assertFalse($auth->can('update', 'document', $doc));
+        $this->assertFalse($auth->can('delete', 'document', $doc));
     }
 
-    public function testCallAuthorizerWithTeacherUser()
+    public function testCallAuthorizerAsStudent()
+    {
+        $this->loginAs('student');
+        $auth = $this->container->get('kalinka.authorizer');
+
+        $this->assertFalse($auth->can('foo', 'system'));
+        $this->assertFalse($auth->can('bar', 'system'));
+        $this->assertFalse($auth->can('baz', 'system'));
+
+        $doc = Fixtures\Document::createFromArray([
+            'ownerName' => 'foo',
+            'locked' => false
+        ]);
+        $this->assertTrue($auth->can('index', 'document', $doc));
+        $this->assertTrue($auth->can('read', 'document', $doc));
+        $this->assertFalse($auth->can('create', 'document', $doc));
+        $this->assertFalse($auth->can('update', 'document', $doc));
+        $this->assertFalse($auth->can('delete', 'document', $doc));
+    }
+
+    public function testCallAuthorizerAsDavid()
+    {
+        $this->markTestSkipped();
+    }
+
+    public function testCallAuthorizerAsEvan()
+    {
+        $this->markTestSkipped();
+    }
+
+    public function testCallAuthorizerAsAnonymousUser()
     {
         $this->markTestSkipped();
     }

@@ -15,27 +15,31 @@ class Document
 
     /**
      * @Kalinka\Serialize('administer')
+     * @Serializer\Type("string")
      */
-    public $ownerId;
+    public $ownerName;
 
     /**
      * @Kalinka\Deserialize('administer')
+     * @Serializer\Type("string")
      */
     public $comments;
 
     /**
      * @Kalinka\Deserialize('update')
+     * @Serializer\Type("string")
      */
     public $language;
 
     /**
      * @Kalinka\Deserialize('update')
+     * @Serializer\Type("string")
      */
     public $title;
 
     /**
      * @Kalinka\Deserialize('update')
-     * @Serializer\Type("integer")
+     * @Serializer\Type("string")
      */
     public $content;
 
@@ -51,5 +55,9 @@ class Document
      */
     public $dateModified;
 
-    public function locked() { return true; }
+    /**
+     * @Serializer\ReadOnly
+     * @Serializer\Type("boolean")
+     */
+    protected $locked;
 }

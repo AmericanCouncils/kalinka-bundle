@@ -1,0 +1,13 @@
+services:
+    app.session.storage:
+        class: Symfony\Component\HttpFoundation\Session\Storage\MockArraySessionStorage
+
+    app.guard.system:
+        class: AC\KalinkaBundle\Tests\Fixtures\FixtureBundle\Auth\AppGuard
+        tags:
+            - { name: kalinka.guard, tag: 'system' }
+
+    app.guard.document:
+        class: AC\KalinkaBundle\Tests\Fixtures\FixtureBundle\Auth\DocumentGuard
+        tags:
+            - { name: kalinka.guard, tag: 'document' }
