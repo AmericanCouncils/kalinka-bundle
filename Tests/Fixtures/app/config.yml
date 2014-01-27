@@ -33,8 +33,8 @@ security:
                     admin:      { password: admin, roles: ['admin'] }
                     teacher:    { password: teacher, roles: ['teacher'] }
                     student:    { password: student, roles: ['student'] }
-                    dsimon:     { password: dsimon, roles: ['admin','teacher'] }
-                    evillemez:  { password: evillemez, roles: ['student','teacher:document'] }
+                    david:      { password: david, roles: ['student','teacher'] }
+                    evan:       { password: evan, roles: ['student','teacher:document:create|delete', 'admin:system:*'] }
 
 sensio_framework_extra:
     router:  { annotations: true }
@@ -58,6 +58,10 @@ jms_serializer:
         auto_detection: true
 
 ac_kalinka:
+#    role_fragments:
+#        quasi_teacher:
+#            system: admin
+#            document: teacher
     roles:
         anonymous:
             document:

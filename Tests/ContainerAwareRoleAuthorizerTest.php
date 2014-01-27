@@ -15,7 +15,7 @@ class ContainerAwareRoleAuthorizerTest extends WebTestCase
     /**
      * Populates container as it would be during a request from a specific user.
      */
-    protected function loginAs($name, $pass = null)
+    protected function loginAs($name = null, $pass = null)
     {
         $pass = $pass ? $pass : $name;
 
@@ -121,7 +121,22 @@ class ContainerAwareRoleAuthorizerTest extends WebTestCase
 
     public function testCallAuthorizerAsDavid()
     {
-        $this->markTestSkipped();
+        $this->loginAs('david');
+        $auth = $this->container->get('kalinka.authorizer');
+
+        $this->assertTrue($auth->can('foo', 'system'));
+        $this->assertFalse($auth->can('bar', 'system'));
+        $this->assertFalse($auth->can('baz', 'system'));
+
+        $doc = Fixtures\Document::createFromArray([
+            'ownerName' => 'david',
+            'locked' => false
+        ]);
+        $this->assertTrue($auth->can('index', 'document', $doc));
+        $this->assertTrue($auth->can('read', 'document', $doc));
+        $this->assertTrue($auth->can('create', 'document', $doc));
+        $this->assertTrue($auth->can('update', 'document', $doc));
+        $this->assertTrue($auth->can('delete', 'document', $doc));
     }
 
     public function testCallAuthorizerAsEvan()
@@ -131,6 +146,21 @@ class ContainerAwareRoleAuthorizerTest extends WebTestCase
 
     public function testCallAuthorizerAsAnonymousUser()
     {
-        $this->markTestSkipped();
+        $this->loginAs(null);
+        $auth = $this->container->get('kalinka.authorizer');
+
+        $this->assertFalse($auth->can('foo', 'system'));
+        $this->assertFalse($auth->can('bar', 'system'));
+        $this->assertFalse($auth->can('baz', 'system'));
+
+        $doc = Fixtures\Document::createFromArray([
+            'ownerName' => 'david',
+            'locked' => false
+        ]);
+        $this->assertFalse($auth->can('index', 'document', $doc));
+        $this->assertTrue($auth->can('read', 'document', $doc));
+        $this->assertFalse($auth->can('create', 'document', $doc));
+        $this->assertFalse($auth->can('update', 'document', $doc));
+        $this->assertFalse($auth->can('delete', 'document', $doc));
     }
 }

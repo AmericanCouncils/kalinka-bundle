@@ -27,6 +27,8 @@ class ContainerAwareRoleAuthorizer extends RoleAuthorizer
         if ($context->getToken()) {
             $subject = $context->getToken()->getUser();
             $roles = $subject->getRoles();
+
+            //TODO: check for partial roles
         }
 
         parent::__construct($subject, $roles);
