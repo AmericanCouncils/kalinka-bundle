@@ -4,7 +4,7 @@ namespace AC\KalinkaBundle;
 
 use Symfony\Component\HttpKernel\Bundle\Bundle;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
-use AC\KalinkaBundle\DependencyInjection\GuardServicesPass;
+use AC\KalinkaBundle\DependencyInjection\TaggedServicesPass;
 
 class ACKalinkaBundle extends Bundle
 {
@@ -13,6 +13,6 @@ class ACKalinkaBundle extends Bundle
         parent::build($container);
 
         //find tagged guard services registered by app or other bundles
-        $container->addCompilerPass(new GuardServicesPass());
+        $container->addCompilerPass(new TaggedServicesPass());
     }
 }

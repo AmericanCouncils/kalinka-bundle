@@ -19,23 +19,10 @@ class ACKalinkaExtension extends Extension
         $configuration = new Configuration();
         $config = $this->processConfiguration($configuration, $configs);
 
-        $container->setParameter('kalinka.role_map', $config['roles']);
-
-        foreach ($config['authorizers'] as $name => $authConf) {
-            $def = new Definition(
-                'AC\KalinkaBundle\AuthorizerContainer',
-                [
-                    $authConf,
-                    new Reference('kalinka.authorizer_factory'),
-                    new Reference('security.context'),
-                    new Reference('service_container')
-                ]
-            );
-            $container->setDefinition("kalinka.authorizer_containers.$name", $def);
-            if ($name == "default") {
-                $container->setAlias("kalinka", "kalinka.authorizer_containers.default");
-            }
-        }
+        $auth = $config['authorizers']['default'];
+        $container->setParameter('kalinka.role_map', $auth['roles']);
+        $container->setParameter('kalinka.anonymous_role', $auth['anonymous_role']);
+        $container->setParameter('kalinka.authenticated_role', $auth['authenticated_role']);
     }
 
     public function getAlias()

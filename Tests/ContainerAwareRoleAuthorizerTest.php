@@ -139,11 +139,6 @@ class ContainerAwareRoleAuthorizerTest extends WebTestCase
         $this->assertTrue($auth->can('delete', 'document', $doc));
     }
 
-    public function testCallAuthorizerAsEvan()
-    {
-        $this->markTestSkipped();
-    }
-
     public function testCallAuthorizerAsAnonymousUser()
     {
         $this->loginAs(null);

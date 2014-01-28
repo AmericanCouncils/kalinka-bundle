@@ -26,6 +26,7 @@ security:
     firewalls:
         everything:
             http_basic: ~
+            anonymous: true
     providers:
         in_memory:
             memory:
@@ -34,7 +35,6 @@ security:
                     teacher:    { password: teacher, roles: ['teacher'] }
                     student:    { password: student, roles: ['student'] }
                     david:      { password: david, roles: ['student','teacher'] }
-                    evan:       { password: evan, roles: ['student','teacher:document:create|delete', 'admin:system:*'] }
 
 sensio_framework_extra:
     router:  { annotations: true }
@@ -58,35 +58,40 @@ jms_serializer:
         auto_detection: true
 
 ac_kalinka:
-#    role_fragments:
-#        quasi_teacher:
-#            system: admin
-#            document: teacher
-    roles:
-        anonymous:
-            document:
-                read: 'allow'
-        admin:
-            system:
-                foo: 'allow'
-                bar: 'allow'
-                baz: 'allow'
-            document:
-                index: 'allow'
-                create: 'allow'
-                read: 'allow'
-                update: 'allow'
-                delete: 'allow'
-        student:
-            document:
-                index: 'allow'
-                read: 'allow'
-        teacher:
-            system:
-                foo: 'allow'
-            document:
-                index: 'allow'
-                create: 'allow'
-                read: 'allow'
-                update: ['owner', 'unlocked']
-                delete: ['owner', 'unlocked']
+    default_authorizer: 'default'
+    authorizers:
+        default:
+            authenticated_role: 'authenticated'
+            anonymous_role: 'anonymous'
+            roles:
+                authenticated:
+                    document:
+                        read: 'allow'
+                        index: 'allow'
+                anonymous:
+                    document:
+                        read: 'allow'
+                admin:
+                    system:
+                        foo: 'allow'
+                        bar: 'allow'
+                        baz: 'allow'
+                    document:
+                        index: 'allow'
+                        create: 'allow'
+                        read: 'allow'
+                        update: 'allow'
+                        delete: 'allow'
+                student:
+                    document:
+                        index: 'allow'
+                        read: 'allow'
+                teacher:
+                    system:
+                        foo: 'allow'
+                    document:
+                        index: 'allow'
+                        create: 'allow'
+                        read: 'allow'
+                        update: ['owner', 'unlocked']
+                        delete: ['owner', 'unlocked']

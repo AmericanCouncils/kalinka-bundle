@@ -1,4 +1,11 @@
 services:
     kalinka.authorizer:
         class: AC\KalinkaBundle\ContainerAwareRoleAuthorizer
-        arguments: [@security.context, @service_container, %kalinka.role_map%]
+        arguments:
+            - @security.context
+            - @service_container
+            - %kalinka.role_map%
+            - %kalinka.anonymous_role%
+            - %kalinka.authenticated_role%
+        tags:
+            - { name: kalinka.authorizer, tag: default }

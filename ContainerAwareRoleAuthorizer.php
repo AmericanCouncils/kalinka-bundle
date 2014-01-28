@@ -5,6 +5,7 @@ namespace AC\KalinkaBundle;
 use AC\Kalinka\Authorizer\RoleAuthorizer;
 use Symfony\Component\Security\Core\SecurityContextInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
+use Symfony\Component\Security\Core\Authentication\Token\AnonymousToken;
 
 /**
  * This class has a container, and a map of available guard services, so it can load and register
@@ -16,19 +17,26 @@ class ContainerAwareRoleAuthorizer extends RoleAuthorizer
     private $guardMap = [];
     private $loadedTypes = [];
 
-    public function __construct(SecurityContextInterface $context, ContainerInterface $container, $rolePolicies = [], $guardMap = [])
+    public function __construct(SecurityContextInterface $context, ContainerInterface $container, $rolePolicies = [], $anonRole = null, $authRole = null)
     {
         $this->container = $container;
-        $this->guardMap = $guardMap;
 
         $subject = null;
         $roles = [];
 
-        if ($context->getToken()) {
+        //check for roles from the security token
+        //automatically inject anonymous/authenticated roles, if configured
+        if ($token = $context->getToken()) {
             $subject = $context->getToken()->getUser();
-            $roles = $subject->getRoles();
+            $roles = array_map(function($item) { return $item->getRole(); }, $token->getRoles());
 
-            //TODO: check for partial roles
+            if (($token instanceof AnonymousToken) && $anonRole) {
+                $roles[] = $anonRole;
+            } else if ($token->isAuthenticated() && $authRole) {
+                $roles[] = $authRole;
+            }
+        } else if ($anonRole) {
+            $roles[] = $anonRole;
         }
 
         parent::__construct($subject, $roles);
