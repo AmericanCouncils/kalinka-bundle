@@ -1,3 +1,11 @@
 services:
-    kalinka.authorizer_factory:
-        class: AC\KalinkaBundle\AuthorizerFactory
+    kalinka.authorizer:
+        class: AC\KalinkaBundle\ContainerAwareRoleAuthorizer
+        arguments:
+            - @security.context
+            - @service_container
+            - %kalinka.authorizer.default.role_map%
+            - %kalinka.authorizer.default.anonymous_role%
+            - %kalinka.authorizer.default.authenticated_role%
+        tags:
+            - { name: kalinka.authorizer, tag: default }
