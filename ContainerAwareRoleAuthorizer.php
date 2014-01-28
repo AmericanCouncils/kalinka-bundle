@@ -28,14 +28,14 @@ class ContainerAwareRoleAuthorizer extends RoleAuthorizer
         //automatically inject anonymous/authenticated roles, if configured
         if ($token = $context->getToken()) {
             $subject = $context->getToken()->getUser();
-            $roles = array_map(function($item) { return $item->getRole(); }, $token->getRoles());
+            $roles = array_map(function ($item) { return $item->getRole(); }, $token->getRoles());
 
             if (($token instanceof AnonymousToken) && $anonRole) {
                 $roles[] = $anonRole;
-            } else if ($token->isAuthenticated() && $authRole) {
+            } elseif ($token->isAuthenticated() && $authRole) {
                 $roles[] = $authRole;
             }
-        } else if ($anonRole) {
+        } elseif ($anonRole) {
             $roles[] = $anonRole;
         }
 

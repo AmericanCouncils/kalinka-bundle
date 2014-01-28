@@ -4,8 +4,8 @@ services:
         arguments:
             - @security.context
             - @service_container
-            - %kalinka.role_map%
-            - %kalinka.anonymous_role%
-            - %kalinka.authenticated_role%
+            - %kalinka.authorizer.default.role_map%
+            - %kalinka.authorizer.default.anonymous_role%
+            - %kalinka.authorizer.default.authenticated_role%
         tags:
             - { name: kalinka.authorizer, tag: default }
