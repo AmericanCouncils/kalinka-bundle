@@ -1,5 +1,7 @@
 # Kalinka-Bundle
 
+[![Build Status](https://travis-ci.org/AmericanCouncils/kalinka-bundle.png?branch=master)](https://travis-ci.org/AmericanCouncils/kalinka-bundle)
+
 Symfony2 bundle for [Kalinka](https://github.com/AmericanCouncils/kalinka).
 
 ## Installation ##
