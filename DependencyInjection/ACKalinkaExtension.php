@@ -19,8 +19,15 @@ class ACKalinkaExtension extends Extension
 
         foreach ($config['authorizers'] as $name => $args) {
             $container->setParameter('kalinka.authorizer.'.$name.'.role_map', $args['roles']);
-            $container->setParameter('kalinka.authorizer.'.$name.'.anonymous_role', $args['anonymous_role']);
-            $container->setParameter('kalinka.authorizer.'.$name.'.authenticated_role', $args['authenticated_role']);
+
+            $anonymousRole = 'IS_AUTHENTICATED_ANONYMOUSLY';
+            $authRole = 'IS_AUTHENTICATED_FULLY';
+
+            if (isset($args['anonymous_role'])) { $anonymousRole = $args['anonymous_role']; }
+            if (isset($args['authenticated_role'])) { $authRole = $args['authenticated_role']; }
+
+            $container->setParameter('kalinka.authorizer.'.$name.'.anonymous_role', $anonymousRole);
+            $container->setParameter('kalinka.authorizer.'.$name.'.authenticated_role', $authRole);
         }
     }
 
