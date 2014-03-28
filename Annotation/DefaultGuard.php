@@ -9,7 +9,7 @@ use Doctrine\Common\Annotations\Annotation;
  */
 class DefaultGuard
 {
-    protected $guard;
+    public $guard;
 
     public function __construct($guard)
     {

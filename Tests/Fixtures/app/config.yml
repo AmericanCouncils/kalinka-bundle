@@ -82,6 +82,7 @@ ac_kalinka:
                         read: 'allow'
                         update: 'allow'
                         delete: 'allow'
+                        administer: 'allow'
                 student:
                     document:
                         index: 'allow'
@@ -95,3 +96,4 @@ ac_kalinka:
                         read: 'allow'
                         update: ['owner', 'unlocked']
                         delete: ['owner', 'unlocked']
+                        administer: 'allow'

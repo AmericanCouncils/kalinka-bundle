@@ -39,8 +39,8 @@ class Controllers extends Controller
         $doc->setDateCreated(0);
         $doc->setDateModified(1);
         $serializer = $this->get('jms_serializer');
-        $serializer->serialize($doc, 'json');
+        $serialized = $serializer->serialize($doc, 'json');
 
-        return new Response('got to the end!');
+        return new Response($serialized);
     }
 }

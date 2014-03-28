@@ -7,6 +7,16 @@ use JMS\Serializer\EventDispatcher\PreDeserializeEvent;
 
 class KalinkaAuthorizationSubscriber implements EventSubscriberInterface
 {
+    private $auth;
+    private $reader;
+
+    // todo typehinting
+    public function __construct($auth, $reader)
+    {
+        $this->auth = $auth;
+        $this->reader = $reader;
+    }
+
     public static function getSubscribedEvents()
     {
         return [
@@ -24,6 +34,52 @@ class KalinkaAuthorizationSubscriber implements EventSubscriberInterface
     public function onPreSerialize(PreSerializeEvent $event)
     {
         $object = $event->getObject();
+        $reflObject = new \ReflectionObject($event->getObject());
+        $properties = ($reflObject->getProperties());
+        $defaultGuardAnnotation = $this->reader->getClassAnnotation($reflObject, 'AC\KalinkaBundle\Annotation\DefaultGuard');
+        if ($defaultGuardAnnotation) {
+            $defaultGuard = $defaultGuardAnnotation->guard['value'];
+        }
+
+        foreach ($properties as $property) {
+            $propAnnotation = $this->reader->getPropertyAnnotation($property, 'AC\KalinkaBundle\Annotation\Serialize');
+            if($propAnnotation) {
+                $action = $propAnnotation->action['action'];
+                $guard = $defaultGuard;
+                // TODO: use property guard if one is set in the annotation
+                $allowed = $this->auth->can($action, $guard);
+            }
+            if (!$allowed) {
+                // TODO is this the best way to do this? Does it depend too much on model traits bundle?
+                $propertyName = $property->name;
+                $setMethod = "set" . ucfirst($propertyName);
+                if (array_key_exists($setMethod, $object->getMethodMap())) {
+                    $object->$setMethod(null);
+                }
+
+                // $object->$property = null;
+            }
+         }
+            // $allowed = $this->auth->can(
+            //     ''
+            // );
+            // print_r($allowed);
+            // if auth says no
+            // $this->auth->can('???')
+                // set propery to null
+            // print_r("Object:");
+             # code...
+            // print_r($event->getObject());
+            // print_r("\n");
+            // print_r("Visitor:");
+            // print_r(get_class($event->getVisitor()));
+            // print_r("\n");
+            // print_r("Context:");
+            // print_r(get_class($event->getContext()));
+            // print_r("\n");
+            // print_r("Type:");
+            // print_r($event->getType());
+            // print_r("\n");
 
     }
 
