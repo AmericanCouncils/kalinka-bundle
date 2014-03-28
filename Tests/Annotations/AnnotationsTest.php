@@ -32,7 +32,9 @@ class AnnotationsTest extends WebTestCase
     }
 
     /**
-     *
+     * There might be a more direct way to test annotation loading.
+     * This calls a route that uses serializer internally, and thus parses the annotations.
+     * It should fail if the annotations aren't loaded, but it could also fail for other reasons.
      *
      */
     public function testAnnotationLoading()

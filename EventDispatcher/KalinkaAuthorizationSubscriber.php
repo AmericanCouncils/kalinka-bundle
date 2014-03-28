@@ -1,7 +1,6 @@
 <?php
 
 namespace AC\KalinkaBundle\EventDispatcher;
-
 use JMS\Serializer\EventDispatcher\EventSubscriberInterface;
 use JMS\Serializer\EventDispatcher\PreSerializeEvent;
 use JMS\Serializer\EventDispatcher\PreDeserializeEvent;
@@ -25,14 +24,12 @@ class KalinkaAuthorizationSubscriber implements EventSubscriberInterface
     public function onPreSerialize(PreSerializeEvent $event)
     {
         $object = $event->getObject();
-        print_r("pre-serialize method of KalinkaAuthorizationSubscriber called");
 
     }
 
     public function onPreDeserialize(PreDeserializeEvent $event)
     {
         $object = $event->getObject();
-        print_r("pre-deserialize method of KalinkaAuthorizationSubscriber called");
         //$event is JMS\Serializer\EventDispatcher\PreSerializeEvent
         // if (get_class($object) == "AC\FlagshipBundle\Document\User") {
         //     print_r("Object:");
@@ -52,4 +49,3 @@ class KalinkaAuthorizationSubscriber implements EventSubscriberInterface
         // }
     }
 }
-

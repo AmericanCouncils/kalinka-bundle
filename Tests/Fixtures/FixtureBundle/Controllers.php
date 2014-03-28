@@ -38,14 +38,8 @@ class Controllers extends Controller
         $doc->setContent("Known for making news on and off the court, Barkley goes one-one-one with himself in his autobiography, Sir Charles.");
         $doc->setDateCreated(0);
         $doc->setDateModified(1);
-
-        // print_r($this->get('annotation_reader'));
         $serializer = $this->get('jms_serializer');
         $serializer->serialize($doc, 'json');
-        // $data = $serializer->deserialize($inputStr, $typeName, $format);
-
-
-        // serialize it!
 
         return new Response('got to the end!');
     }

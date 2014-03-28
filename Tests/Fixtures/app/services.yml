@@ -11,3 +11,8 @@ services:
         class: AC\KalinkaBundle\Tests\Fixtures\FixtureBundle\Auth\DocumentGuard
         tags:
             - { name: kalinka.guard, tag: 'document' }
+
+    jms_serializer.subscriber.document:
+        class: AC\KalinkaBundle\EventDispatcher\KalinkaAuthorizationSubscriber
+        tags:
+            - { name: jms_serializer.event_subscriber }

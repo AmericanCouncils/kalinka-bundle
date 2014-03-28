@@ -35,6 +35,4 @@ class KalinkaAuthorizationSubscriberTest extends WebTestCase
     {
         $this->assertTrue(true);
     }
-
-
 }
