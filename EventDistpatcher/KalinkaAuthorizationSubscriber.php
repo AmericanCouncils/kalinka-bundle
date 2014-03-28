@@ -25,28 +25,14 @@ class KalinkaAuthorizationSubscriber implements EventSubscriberInterface
     public function onPreSerialize(PreSerializeEvent $event)
     {
         $object = $event->getObject();
-        //$event is JMS\Serializer\EventDispatcher\PreSerializeEvent
-        // if (get_class($object) == "AC\FlagshipBundle\Document\User") {
-            // print_r("Object:");
-            // print_r($event->getObject());
-            // print_r("\n");
-            // print_r("Visitor:");
-            // print_r(get_class($event->getVisitor()));
-            // print_r("\n");
-            // print_r("Context:");
-            // print_r(get_class($event->getContext()));
-            // print_r("\n");
-            // print_r("Type:");
-            // print_r($event->getType());
-            // print_r("\n");
-            // $object->setEmail(null);
+        print_r("pre-serialize method of KalinkaAuthorizationSubscriber called");
 
-        // }
     }
 
     public function onPreDeserialize(PreDeserializeEvent $event)
     {
         $object = $event->getObject();
+        print_r("pre-deserialize method of KalinkaAuthorizationSubscriber called");
         //$event is JMS\Serializer\EventDispatcher\PreSerializeEvent
         // if (get_class($object) == "AC\FlagshipBundle\Document\User") {
         //     print_r("Object:");

@@ -1,5 +1,7 @@
 <?php
 
+use Doctrine\Common\Annotations\AnnotationRegistry;
+
 function includeIfExists($file)
 {
     if (file_exists($file)) {
@@ -16,6 +18,11 @@ if ((!$loader = includeIfExists(__DIR__.'/../../vendor/autoload.php')) && (!$loa
 if (class_exists('Doctrine\Common\Annotations\AnnotationRegistry')) {
     \Doctrine\Common\Annotations\AnnotationRegistry::registerLoader(array($loader, 'loadClass'));
 }
+    $loader->add('AC\KalinkaBundle\Tests', __DIR__);
+    AnnotationRegistry::registerLoader('class_exists');
+
+    # this seems to be unneeded, but I'm not sure why
+    // AnnotationRegistry::registerAutoloadNamespace("AC\KalinkBundle\Annotation", __DIR__ . "/../../Annotation");
 
 //remove cached data before running tests
 $tmpDir = sys_get_temp_dir().'/ACKalinkaBundleTests';

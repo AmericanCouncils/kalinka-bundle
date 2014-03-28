@@ -5,6 +5,7 @@ namespace AC\KalinkaBundle;
 use Symfony\Component\HttpKernel\Bundle\Bundle;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use AC\KalinkaBundle\DependencyInjection\TaggedServicesPass;
+use AC\KalinkaBundle\AnnotationReaderFetcher;
 
 class ACKalinkaBundle extends Bundle
 {

@@ -1,12 +1,12 @@
 <?php
 
-namespace AC\KalinkBundle\Annotation;
+namespace AC\KalinkaBundle\Annotation;
 
 use Doctrine\Common\Annotations\Annotation;
 
 /**
  * @Annotation
  */
-class Guard
+class SerializeAndDeserialize
 {
 }
