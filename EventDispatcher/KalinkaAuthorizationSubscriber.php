@@ -43,7 +43,7 @@ class KalinkaAuthorizationSubscriber implements EventSubscriberInterface
 
         foreach ($properties as $property) {
             $propAnnotation = $this->reader->getPropertyAnnotation($property, 'AC\KalinkaBundle\Annotation\Serialize');
-            if($propAnnotation) {
+            if ($propAnnotation) {
                 $action = $propAnnotation->action['action'];
                 $guard = $defaultGuard;
                 // TODO: use property guard if one is set in the annotation

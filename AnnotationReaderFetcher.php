@@ -16,7 +16,7 @@ class AnnotationReaderFetcher
             if (isset(static::$readerFetchFunc)) {
                 static::$reader = call_user_func(static::$readerFetchFunc);
             } else {
-                $loader = require('vendor/autoload.php');
+                $loader = require 'vendor/autoload.php';
                 AnnotationRegistry::registerLoader([$loader, 'loadClass']);
                 // AnnotationRegistry::registerAutoloadNamespace(
                 //     'JMS\Serializer\Annotation',

@@ -11,6 +11,7 @@ use Symfony\Component\HttpKernel\Exception\HttpException;
 use JMS\Serializer\SerializationContext;
 use JMS\Serializer\DeserializationContext;
 use AC\KalinkaBundle\Tests\Fixtures\FixtureBundle\Entity\Document;
+use AC\KalinkaBundle\Tests\Fixtures\FixtureBundle\Entity\Robot;
 
 /**
  * These controller routes are called by various tests.
@@ -32,7 +33,7 @@ class Controllers extends Controller
     {
         $doc = new Document();
         $doc->setOwnerName("Charles Barkley");
-        $doc->setComments("Man! How did Charles Barkley get in here?");
+        $doc->setComments("Sir Charles is revealed to be a smart, thoughtful and authentic gentleman.");
         $doc->setLanguage("English");
         $doc->setTitle("Sir Charles: The Wit and Wisdom of Charles Barkley");
         $doc->setContent("Known for making news on and off the court, Barkley goes one-one-one with himself in his autobiography, Sir Charles.");
@@ -42,5 +43,34 @@ class Controllers extends Controller
         $serialized = $serializer->serialize($doc, 'json');
 
         return new Response($serialized);
+    }
+
+    /**
+     * @Route("/robot")
+     * @Method("GET")
+     **/
+    public function getRobotAction(Request $req)
+    {
+        $robot = new Robot();
+        $robot->setName("Arnold");
+        $robot->setMake("Cyberdyne");
+        $robot->setModel("T-850");
+        $robot->setOperationalStatus('ACTIVATED');
+        $robot->setFriendlyToHumans(false);
+        $serializer = $this->get('jms_serializer');
+        $serialized = $serializer->serialize($doc, 'json');
+
+        return new Response($serialized);
+    }
+
+    /**
+     * @Route("/robot")
+     * @Method("POST")
+     **/
+    public function createRobotAction(Request $req)
+    {
+        // get request
+        // deserialize into robot model
+
     }
 }

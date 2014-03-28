@@ -4,8 +4,6 @@ namespace AC\KalinkaBundle\Tests\Annotations;
 
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\HttpFoundation\Request;
-use AC\KalinkaBundle\ContainerAwareRoleAuthorizer;
-use AC\KalinkaBundle\Tests\Fixtures\FixtureBundle\Entity as Fixtures;
 
 class AnnotationsTest extends WebTestCase
 {

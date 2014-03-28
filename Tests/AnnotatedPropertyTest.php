@@ -4,8 +4,6 @@ namespace AC\KalinkaBundle\Tests;
 
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\HttpFoundation\Request;
-use AC\KalinkaBundle\ContainerAwareRoleAuthorizer;
-use AC\KalinkaBundle\Tests\Fixtures\FixtureBundle\Entity as Fixtures;
 
 class AnnotatedPropertyTest extends WebTestCase
 {
@@ -31,17 +29,6 @@ class AnnotatedPropertyTest extends WebTestCase
         $this->container = $client->getContainer();
     }
 
-    public function testStudentView()
-    {
-        // a student shouldn't be able to see ownerName.
-
-        $this->loginAs('student');
-        $crawler = $this->client->request('GET', '/document');
-        $content = json_decode($this->client->getResponse()->getContent(), true);
-        // print_r($content);
-        $this->assertFalse(array_key_exists('ownername', $content));
-    }
-
     public function testDifferentViewBasedOnUser()
     {
         $contents = [];
@@ -63,6 +50,19 @@ class AnnotatedPropertyTest extends WebTestCase
         );
     }
 
+    public function testStudentView()
+    {
+        // a student shouldn't be able to see ownerName.
+
+        $this->loginAs('student');
+        $crawler = $this->client->request('GET', '/document');
+        $content = json_decode($this->client->getResponse()->getContent(), true);
+        // print_r($content);
+        $this->assertFalse(array_key_exists('ownername', $content));
+    }
+
+
+
     // public function testAdminView()
     // {
     //     $this->loginAs('admin');
@@ -72,8 +72,5 @@ class AnnotatedPropertyTest extends WebTestCase
     // {
     //     $this->loginAs('teacher');
     // }
-
-
-
 
 }

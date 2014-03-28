@@ -83,10 +83,20 @@ ac_kalinka:
                         update: 'allow'
                         delete: 'allow'
                         administer: 'allow'
+                    robot:
+                        index: 'allow'
+                        create: 'allow'
+                        read: 'allow'
+                        update: 'allow'
+                        delete: 'allow'
                 student:
                     document:
                         index: 'allow'
                         read: 'allow'
+                    robot:
+                        index: 'allow'
+                        read: 'allow'
+                        befriend: 'allow'
                 teacher:
                     system:
                         foo: 'allow'
@@ -97,3 +107,8 @@ ac_kalinka:
                         update: ['owner', 'unlocked']
                         delete: ['owner', 'unlocked']
                         administer: 'allow'
+                    robot:
+                        index: 'allow'
+                        read: 'allow'
+                        update: 'allow'
+                        activate: 'allow'

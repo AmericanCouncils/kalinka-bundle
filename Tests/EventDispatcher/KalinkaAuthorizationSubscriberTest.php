@@ -4,8 +4,6 @@ namespace AC\KalinkaBundle\Tests;
 
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\HttpFoundation\Request;
-use AC\KalinkaBundle\ContainerAwareRoleAuthorizer;
-use AC\KalinkaBundle\Tests\Fixtures\FixtureBundle\Model as Fixtures;
 
 class KalinkaAuthorizationSubscriberTest extends WebTestCase
 {
