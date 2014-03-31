@@ -42,15 +42,24 @@ class KalinkaAuthorizationSubscriber implements EventSubscriberInterface
     public function onPreSerialize(PreSerializeEvent $event)
     {
         $object = $event->getObject();
+        $factory = $event->getContext()->getMetadataFactory();
+        $classMetadata = $factory->getMetadataForClass(get_class($object));
 
-
-        // Theoretically, I should be able to use the metadata stack to find out if there are configured getters/setters etc and use those in preference to reflection.
+        // Theoretically, I should be able to use the metadata stack to find out
+        // if there are configured getters/setters etc and use those in preference to reflection.
         // but the metaDataStack here is empty...
+
         // $metaDataStack = $event->getContext()->getMetadataStack();
+        // print_r(get_class($event->getContext()));
         // print_r($metaDataStack);
         // $propertyMetadata = $metaDataStack[count($metaDataStack) - 2];
         // $instance = $propertyMetadata->reflection->getValue($object);
         // print_r($instance);
+
+        // print_r(get_class($factory->getMeta));
+        // print_r($classMetadata);
+
+
 
         $reflObject = new \ReflectionObject($event->getObject());
         $properties = ($reflObject->getProperties());
@@ -97,9 +106,14 @@ class KalinkaAuthorizationSubscriber implements EventSubscriberInterface
                 $allowed = true;
             }
             if (!$allowed) {
+                $propertyMetadata = $classMetadata->propertyMetadata[$property->name];
+                print_r($propertyMetadata);
                 // TODO true if there is a configured setter
-                if (false) {
-                    // use the setter (null);
+                print_r(is_null($propertyMetadata->setter));
+                if (isset($propertyMetadata->setter)) {
+                    $setter = $propertyMetadata->setter(null);
+                    $object->$setter(null);
+                    print_r('gogogogo');
                 } else {
                     // use reflection
                     $property->setAccessible(true);
