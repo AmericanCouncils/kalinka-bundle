@@ -10,7 +10,7 @@ class KalinkaAuthorizationSubscriber implements EventSubscriberInterface
     private $auth;
     private $reader;
 
-    protected function normalizeStringForComparison($inputString)
+    protected function normalizeString($inputString)
     {
         $output = strtolower($inputString);
         $output = str_replace("_", "", $output);
@@ -54,17 +54,28 @@ class KalinkaAuthorizationSubscriber implements EventSubscriberInterface
 
         $reflObject = new \ReflectionObject($event->getObject());
         $properties = ($reflObject->getProperties());
-        $defaultGuardAnnotation = $this->reader->getClassAnnotation($reflObject, 'AC\KalinkaBundle\Annotation\DefaultGuard');
+        $defaultGuardAnnotation = $this->reader->getClassAnnotation(
+            $reflObject,
+            'AC\KalinkaBundle\Annotation\DefaultGuard'
+        );
         if ($defaultGuardAnnotation) {
             $defaultGuard = $defaultGuardAnnotation->guard['value'];
         }
 
         foreach ($properties as $property) {
-            $SerializeAnno = $this->reader->getPropertyAnnotation($property, 'AC\KalinkaBundle\Annotation\Serialize');
-            $serializeAndDeserializeAnno = $this->reader->getPropertyAnnotation($property, 'AC\KalinkaBundle\Annotation\SerializeAndDeserialize');
+            $SerializeAnno = $this->reader->getPropertyAnnotation(
+                $property,
+                'AC\KalinkaBundle\Annotation\Serialize'
+            );
+            $serializeAndDeserializeAnno = $this->reader->getPropertyAnnotation(
+                $property,
+                'AC\KalinkaBundle\Annotation\SerializeAndDeserialize'
+            );
 
             if (!is_null($SerializeAnno) && !is_null($serializeAndDeserializeAnno)) {
-                throw new \RuntimeException("$property has both a Serialize and a SerializeAndDeserialize annotation set - remove one.");
+                throw new \RuntimeException(
+                    "$property has both a Serialize and a SerializeAndDeserialize annotation set - remove one."
+                );
             }
 
             $propAnnotation = $SerializeAnno ? $SerializeAnno : $serializeAndDeserializeAnno;
@@ -81,7 +92,8 @@ class KalinkaAuthorizationSubscriber implements EventSubscriberInterface
                 $allowed = $this->auth->can($action, $guard);
             } else {
                 // what to do if there is no property annotation? Default to show, or hide?
-                // currently defaulting to show. It might make more sense to make this configurable in the app config.
+                // currently defaulting to show. It might make more sense to make
+                // this configurable in the app config.
                 $allowed = true;
             }
             if (!$allowed) {
@@ -103,22 +115,36 @@ class KalinkaAuthorizationSubscriber implements EventSubscriberInterface
         $target = $event->getType()['name'];
         $reflObject = new \ReflectionObject(new $target);
         $properties = ($reflObject->getProperties());
-        $defaultGuardAnnotation = $this->reader->getClassAnnotation($reflObject, 'AC\KalinkaBundle\Annotation\DefaultGuard');
+        $defaultGuardAnnotation = $this->reader->getClassAnnotation(
+            $reflObject,
+            'AC\KalinkaBundle\Annotation\DefaultGuard'
+        );
         if ($defaultGuardAnnotation) {
             $defaultGuard = $defaultGuardAnnotation->guard['value'];
         }
 
         foreach ($properties as $property) {
-            $deserializeAnno = $this->reader->getPropertyAnnotation($property, 'AC\KalinkaBundle\Annotation\Deserialize');
-            $serializeAndDeserializeAnno = $this->reader->getPropertyAnnotation($property, 'AC\KalinkaBundle\Annotation\SerializeAndDeserialize');
+            $deserializeAnno = $this->reader->getPropertyAnnotation(
+                $property,
+                'AC\KalinkaBundle\Annotation\Deserialize'
+            );
+            $serializeAndDeserializeAnno = $this->reader->getPropertyAnnotation(
+                $property,
+                'AC\KalinkaBundle\Annotation\SerializeAndDeserialize'
+            );
 
             if (!is_null($deserializeAnno) && !is_null($serializeAndDeserializeAnno)) {
-                throw new \RuntimeException("$property has both a Deserialize and a SerializeAndDeserialize annotation set - remove one.");
+                throw new \RuntimeException(
+                    "$property has both a Deserialize and a SerializeAndDeserialize annotation set - remove one."
+                );
             }
 
             $propAnnotation = $deserializeAnno ? $deserializeAnno : $serializeAndDeserializeAnno;
 
-            $propAnnotation = $this->reader->getPropertyAnnotation($property, 'AC\KalinkaBundle\Annotation\Deserialize');
+            $propAnnotation = $this->reader->getPropertyAnnotation(
+                $property,
+                'AC\KalinkaBundle\Annotation\Deserialize'
+            );
             if ($propAnnotation) {
                 // TODO why is it sometimes 'action' and sometimes 'value'?
                 if (isset($propAnnotation->action['action'])) {
@@ -131,13 +157,15 @@ class KalinkaAuthorizationSubscriber implements EventSubscriberInterface
                 $allowed = $this->auth->can($action, $guard);
             } else {
                 // what to do if there is no property annotation? Default to allow, or deny?
-                // currently defaulting to allow. It might make more sense to make this configurable in the app config.
+                // currently defaulting to allow. It might make more sense to
+                // make this configurable in the app config.
                 $allowed = true;
             }
             if (!$allowed) {
                 foreach ($eventData as $key => $value) {
-                    if ($this->normalizeStringForComparison($key) == $this->normalizeStringForComparison($property->name)) {
-                        // it shouldn't be deserialized, so strip the argument out of the event data.
+                    if ($this->normalizeString($key) == $this->normalizeString($property->name)) {
+                        // it shouldn't be deserialized, so strip the argument
+                        // out of the event data.
                         unset($eventData[$key]);
                     }
                 }
