@@ -29,7 +29,7 @@ class AnnotatedPropertyTest extends WebTestCase
         $this->container = $client->getContainer();
     }
 
-    public function testDifferentViewBasedOnUser()
+    public function testDifferentDocumentViewBasedOnUser()
     {
         $contents = [];
         $this->loginAs('admin');
@@ -50,27 +50,178 @@ class AnnotatedPropertyTest extends WebTestCase
         );
     }
 
-    public function testStudentView()
+    public function testStudentDocumentView()
     {
         // a student shouldn't be able to see ownerName.
-
         $this->loginAs('student');
         $crawler = $this->client->request('GET', '/document');
         $content = json_decode($this->client->getResponse()->getContent(), true);
-        // print_r($content);
-        $this->assertFalse(array_key_exists('ownername', $content));
+        $this->assertSame(
+            [
+                'comments' => "Sir Charles is revealed to be a smart, thoughtful and authentic gentleman.",
+                'language' => "English",
+                'title' => "Sir Charles: The Wit and Wisdom of Charles Barkley",
+                'content' => "Known for making news on and off the court, Barkley goes one-one-one with himself in his autobiography, Sir Charles.",
+                'datecreated' => 0,
+                'datemodified' => 1
+            ],
+            $content
+        );
+    }
+
+    public function testAdminView()
+    {
+        $this->loginAs('admin');
+        $crawler = $this->client->request('GET', '/document');
+        $content = json_decode($this->client->getResponse()->getContent(), true);
+        $this->assertSame(
+            [
+                'ownername' => 'Charles Barkley',
+                'comments' => "Sir Charles is revealed to be a smart, thoughtful and authentic gentleman.",
+                'language' => "English",
+                'title' => "Sir Charles: The Wit and Wisdom of Charles Barkley",
+                'content' => "Known for making news on and off the court, Barkley goes one-one-one with himself in his autobiography, Sir Charles.",
+                'datecreated' => 0,
+                'datemodified' => 1
+            ],
+            $content
+        );
     }
 
 
+// Robot model tests
 
-    // public function testAdminView()
-    // {
-    //     $this->loginAs('admin');
-    // }
+    public function testAdminCreatesRobot()
+    {
+        // admin creates robot, success
+        $this->loginAs('admin');
+        $requestData = [
+            'name' => 'PalBot',
+            'make' => 'Pal Industries',
+            'model' => '6000',
+        ];
+        $this->client->request(
+            'POST',
+            '/robot',
+            [],
+            [],
+            ['CONTENT_TYPE' => 'application/json'],
+            json_encode($requestData)
+        );
+        $content = json_decode($this->client->getResponse()->getContent(), true);
+        $this->assertSame([
+            'name' => 'PalBot',
+            'make' => 'Pal Industries',
+            'model' => '6000',
+            ],
+            $content
+        );
 
-    // public function testTeacherView()
-    // {
-    //     $this->loginAs('teacher');
-    // }
+    }
 
+    public function testAdminCreatesRobotWithFriendlyStatus()
+    {
+        // admin creates robot including fields he shouldn't be able to set.
+        // request succeeds, but extra fields unset.
+
+        $this->loginAs('admin');
+        $requestData = [
+            'name' => 'PalBot',
+            'make' => 'Pal Industries',
+            'model' => '6000',
+            'friendlytohumans' => true
+        ];
+        $this->client->request(
+            'POST',
+            '/robot',
+            [],
+            [],
+            ['CONTENT_TYPE' => 'application/json'],
+            json_encode($requestData)
+        );
+        $content = json_decode($this->client->getResponse()->getContent(), true);
+        $this->assertSame([
+            'name' => 'PalBot',
+            'make' => 'Pal Industries',
+            'model' => '6000',
+            ],
+            $content
+        );
+
+    }
+
+    public function testStudentCreatesRobot()
+    {
+        // student creates robot, failure
+        $this->setExpectedException('Symfony\Component\HttpKernel\Exception\HttpException');
+        $this->loginAs('student');
+        $requestData = [
+            'name' => 'PalBot',
+            'make' => 'Pal Industries',
+            'model' => '6000',
+        ];
+        $this->client->request(
+            'POST',
+            '/robot',
+            [],
+            [],
+            ['CONTENT_TYPE' => 'application/json'],
+            json_encode($requestData)
+        );
+        $content = json_decode($this->client->getResponse()->getContent(), true);
+    }
+    public function testTeacherActivatesRobot()
+    {
+        // teacher activates, success
+        $this->loginAs('teacher');
+        $this->client->request('POST', '/robot/activate');
+        $content = json_decode($this->client->getResponse()->getContent(), true);
+        $this->assertSame(
+            [
+                'name' => "Arnold",
+                'make' => "Cyberdyne",
+                'model' => "T-850",
+                'operationalstatus' => "ACTIVE",
+                'friendlytohumans' => false
+            ],
+            $content
+        );
+
+    }
+    public function testAdminActivatesRobot()
+    {
+        // admin activates, failure
+        $this->setExpectedException('Symfony\Component\HttpKernel\Exception\HttpException');
+        $this->loginAs('admin');
+        $this->client->request('POST', '/robot/activate');
+        $content = json_decode($this->client->getResponse()->getContent(), true);
+
+    }
+    public function testStudentBefriendsRobot()
+    {
+        // student befriends, success
+        $this->loginAs('student');
+        $this->client->request('POST', '/robot/befriend');
+        $content = json_decode($this->client->getResponse()->getContent(), true);
+        $this->assertEquals(
+            [
+                'name' => "Arnold",
+                'make' => "Cyberdyne",
+                'model' => "T-850",
+                'operationalstatus' => "ACTIVE",
+                'friendlytohumans' => true
+            ],
+            $content
+        );
+
+    }
+    public function testTeacherBefriendsRobot()
+    {
+        // teacher befriends, failure
+        $this->setExpectedException('Symfony\Component\HttpKernel\Exception\HttpException');
+        $this->loginAs('teacher');
+        $this->client->request('POST', '/robot/befriend');
+        $content = json_decode($this->client->getResponse()->getContent(), true);
+
+    }
 }

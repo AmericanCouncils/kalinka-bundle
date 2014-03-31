@@ -55,7 +55,7 @@ class Controllers extends Controller
         $robot->setName("Arnold");
         $robot->setMake("Cyberdyne");
         $robot->setModel("T-850");
-        $robot->setOperationalStatus('ACTIVATED');
+        $robot->setOperationalStatus('INACTIVE');
         $robot->setFriendlyToHumans(false);
         $serializer = $this->get('jms_serializer');
         $serialized = $serializer->serialize($doc, 'json');
@@ -69,8 +69,68 @@ class Controllers extends Controller
      **/
     public function createRobotAction(Request $req)
     {
-        // get request
-        // deserialize into robot model
+        $auth = $this->get('kalinka.authorizer');
+        $serializer = $this->get('jms_serializer');
+        // $guard = $this->get('app.guard.robot');
+
+        if (!$auth->can('create', 'robot')) {
+            throw new HttpException(401);
+        }
+
+        $params = json_decode($req->getContent(), true);
+        $robot = $serializer->deserialize(
+            $req->getContent(),
+            'AC\KalinkaBundle\Tests\Fixtures\FixtureBundle\Entity\Robot',
+            'json'
+        );
+
+        return new Response($serializer->serialize($robot, 'json'));
+
+    }
+
+    /**
+     * @Route("/robot/activate")
+     * @Method("POST")
+     **/
+    public function activateRobotAction(Request $req)
+    {
+        $auth = $this->get('kalinka.authorizer');
+        $serializer = $this->get('jms_serializer');
+        if (!$auth->can('activate', 'robot')) {
+            throw new HttpException(401);
+        }
+        $robot = new Robot();
+        $robot->setName("Arnold");
+        $robot->setMake("Cyberdyne");
+        $robot->setModel("T-850");
+        $robot->setOperationalStatus('ACTIVE');
+        $robot->setFriendlyToHumans(false);
+        $serialized = $serializer->serialize($robot, 'json');
+
+        return new Response($serialized);
+
+    }
+
+    /**
+     * @Route("/robot/befriend")
+     * @Method("POST")
+     **/
+    public function befriendRobotAction(Request $req)
+    {
+        $auth = $this->get('kalinka.authorizer');
+        $serializer = $this->get('jms_serializer');
+        if (!$auth->can('befriend', 'robot')) {
+            throw new HttpException(401);
+        }
+        $robot = new Robot();
+        $robot->setName("Arnold");
+        $robot->setMake("Cyberdyne");
+        $robot->setModel("T-850");
+        $robot->setOperationalStatus('ACTIVE');
+        $robot->setFriendlyToHumans(true);
+        $serialized = $serializer->serialize($robot, 'json');
+
+        return new Response($serialized);
 
     }
 }

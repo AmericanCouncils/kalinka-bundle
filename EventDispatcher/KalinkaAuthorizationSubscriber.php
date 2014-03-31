@@ -10,6 +10,14 @@ class KalinkaAuthorizationSubscriber implements EventSubscriberInterface
     private $auth;
     private $reader;
 
+    protected function normalizeStringForComparison($inputString)
+    {
+        $output = strtolower($inputString);
+        $output = str_replace("_", "", $output);
+
+        return $output;
+    }
+
     // todo typehinting
     public function __construct($auth, $reader)
     {
@@ -44,64 +52,65 @@ class KalinkaAuthorizationSubscriber implements EventSubscriberInterface
         foreach ($properties as $property) {
             $propAnnotation = $this->reader->getPropertyAnnotation($property, 'AC\KalinkaBundle\Annotation\Serialize');
             if ($propAnnotation) {
-                $action = $propAnnotation->action['action'];
+                // TODO why is it sometimes 'action' and sometimes 'value'?
+                if (isset($propAnnotation->action['action'])) {
+                    $action = $propAnnotation->action['action'];
+                } else {
+                    $action = $propAnnotation->action['value'];
+                }
                 $guard = $defaultGuard;
                 // TODO: use property guard if one is set in the annotation
                 $allowed = $this->auth->can($action, $guard);
+            } else {
+                // what to do if there is no property annotation? Default to show, or hide?
+                // currently defaulting to show. It might make more sense to make this configurable in the app config.
+                $allowed = true;
             }
             if (!$allowed) {
-                // TODO is this the best way to do this? Does it depend too much on model traits bundle?
-                $propertyName = $property->name;
-                $setMethod = "set" . ucfirst($propertyName);
-                if (array_key_exists($setMethod, $object->getMethodMap())) {
-                    $object->$setMethod(null);
-                }
-
-                // $object->$property = null;
+                $property->setAccessible(true);
+                $property->setValue($object, null);
             }
-         }
-            // $allowed = $this->auth->can(
-            //     ''
-            // );
-            // print_r($allowed);
-            // if auth says no
-            // $this->auth->can('???')
-                // set propery to null
-            // print_r("Object:");
-             # code...
-            // print_r($event->getObject());
-            // print_r("\n");
-            // print_r("Visitor:");
-            // print_r(get_class($event->getVisitor()));
-            // print_r("\n");
-            // print_r("Context:");
-            // print_r(get_class($event->getContext()));
-            // print_r("\n");
-            // print_r("Type:");
-            // print_r($event->getType());
-            // print_r("\n");
-
+        }
     }
 
     public function onPreDeserialize(PreDeserializeEvent $event)
     {
-        $object = $event->getObject();
-        //$event is JMS\Serializer\EventDispatcher\PreSerializeEvent
-        // if (get_class($object) == "AC\FlagshipBundle\Document\User") {
-        //     print_r("Object:");
-        //     print_r($event->getObject());
-        //     print_r("\n");
-        //     print_r("Visitor:");
-        //     print_r(get_class($event->getVisitor()));
-        //     print_r("\n");
-        //     print_r("Context:");
-        //     print_r(get_class($event->getContext()));
-        //     print_r("\n");
-        //     print_r("Type:");
-        //     print_r($event->getType());
-        //     print_r("\n");
-            // $object->setEmail(null);
+        $eventData = $event->getData();
+        $target = $event->getType()['name'];
+        $reflObject = new \ReflectionObject(new $target);
+        $properties = ($reflObject->getProperties());
+        $defaultGuardAnnotation = $this->reader->getClassAnnotation($reflObject, 'AC\KalinkaBundle\Annotation\DefaultGuard');
+        if ($defaultGuardAnnotation) {
+            $defaultGuard = $defaultGuardAnnotation->guard['value'];
+        }
 
-        // }
+        foreach ($properties as $property) {
+            $propAnnotation = $this->reader->getPropertyAnnotation($property, 'AC\KalinkaBundle\Annotation\Deserialize');
+            if ($propAnnotation) {
+                // TODO why is it sometimes 'action' and sometimes 'value'?
+                if (isset($propAnnotation->action['action'])) {
+                    $action = $propAnnotation->action['action'];
+                } else {
+                    $action = $propAnnotation->action['value'];
+                }
+                $guard = $defaultGuard;
+                // TODO: use property guard if one is set in the annotation
+                $allowed = $this->auth->can($action, $guard);
+            } else {
+                // what to do if there is no property annotation? Default to allow, or deny?
+                // currently defaulting to allow. It might make more sense to make this configurable in the app config.
+                $allowed = true;
+            }
+            if (!$allowed) {
+                foreach ($eventData as $key => $value) {
+                    if ($this->normalizeStringForComparison($key) == $this->normalizeStringForComparison($property->name)) {
+                        // it shouldn't be deserialized, so strip the argument out of the event data.
+                        unset($eventData[$key]);
+                    }
+                }
+            }
+        }
+        // set the updated data for serializer to use
+        $event->setData($eventData);
     }
 }
