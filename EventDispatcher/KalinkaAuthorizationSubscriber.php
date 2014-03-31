@@ -42,6 +42,16 @@ class KalinkaAuthorizationSubscriber implements EventSubscriberInterface
     public function onPreSerialize(PreSerializeEvent $event)
     {
         $object = $event->getObject();
+
+
+        // Theoretically, I should be able to use the metadata stack to find out if there are configured getters/setters etc and use those in preference to reflection.
+        // but the metaDataStack here is empty...
+        // $metaDataStack = $event->getContext()->getMetadataStack();
+        // print_r($metaDataStack);
+        // $propertyMetadata = $metaDataStack[count($metaDataStack) - 2];
+        // $instance = $propertyMetadata->reflection->getValue($object);
+        // print_r($instance);
+
         $reflObject = new \ReflectionObject($event->getObject());
         $properties = ($reflObject->getProperties());
         $defaultGuardAnnotation = $this->reader->getClassAnnotation($reflObject, 'AC\KalinkaBundle\Annotation\DefaultGuard');
@@ -67,8 +77,14 @@ class KalinkaAuthorizationSubscriber implements EventSubscriberInterface
                 $allowed = true;
             }
             if (!$allowed) {
-                $property->setAccessible(true);
-                $property->setValue($object, null);
+                // TODO true if there is a configured setter
+                if (false) {
+                    // use the setter (null);
+                } else {
+                    // use reflection
+                    $property->setAccessible(true);
+                    $property->setValue($object, null);
+                }
             }
         }
     }
