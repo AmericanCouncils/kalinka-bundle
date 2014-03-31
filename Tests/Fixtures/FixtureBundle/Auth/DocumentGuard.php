@@ -8,7 +8,7 @@ class DocumentGuard extends BaseGuard
 {
     public function getActions()
     {
-        return ['index','create','read','update','delete'];
+        return ['index','create','read','update','delete','administer'];
     }
 
     public function policyOwner($subj, $obj = null) { return $subj->getUsername() == $obj->ownerName; }

@@ -11,3 +11,8 @@ services:
         class: AC\KalinkaBundle\Tests\Fixtures\FixtureBundle\Auth\DocumentGuard
         tags:
             - { name: kalinka.guard, tag: 'document' }
+
+    app.guard.robot:
+        class: AC\KalinkaBundle\Tests\Fixtures\FixtureBundle\Auth\RobotGuard
+        tags:
+            - { name: kalinka.guard, tag: 'robot' }

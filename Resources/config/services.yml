@@ -9,3 +9,9 @@ services:
             - %kalinka.authorizer.default.authenticated_role%
         tags:
             - { name: kalinka.authorizer, tag: default }
+
+    jms_serializer.subscriber.document:
+        class: AC\KalinkaBundle\EventDispatcher\KalinkaAuthorizationSubscriber
+        arguments: [@kalinka.authorizer, @annotation_reader]
+        tags:
+            - { name: jms_serializer.event_subscriber }
