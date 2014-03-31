@@ -60,7 +60,15 @@ class KalinkaAuthorizationSubscriber implements EventSubscriberInterface
         }
 
         foreach ($properties as $property) {
-            $propAnnotation = $this->reader->getPropertyAnnotation($property, 'AC\KalinkaBundle\Annotation\Serialize');
+            $SerializeAnno = $this->reader->getPropertyAnnotation($property, 'AC\KalinkaBundle\Annotation\Serialize');
+            $serializeAndDeserializeAnno = $this->reader->getPropertyAnnotation($property, 'AC\KalinkaBundle\Annotation\SerializeAndDeserialize');
+
+            if (!is_null($SerializeAnno) && !is_null($serializeAndDeserializeAnno)) {
+                throw new \RuntimeException("$property has both a Serialize and a SerializeAndDeserialize annotation set - remove one.");
+            }
+
+            $propAnnotation = $SerializeAnno ? $SerializeAnno : $serializeAndDeserializeAnno;
+
             if ($propAnnotation) {
                 // TODO why is it sometimes 'action' and sometimes 'value'?
                 if (isset($propAnnotation->action['action'])) {
@@ -101,6 +109,15 @@ class KalinkaAuthorizationSubscriber implements EventSubscriberInterface
         }
 
         foreach ($properties as $property) {
+            $deserializeAnno = $this->reader->getPropertyAnnotation($property, 'AC\KalinkaBundle\Annotation\Deserialize');
+            $serializeAndDeserializeAnno = $this->reader->getPropertyAnnotation($property, 'AC\KalinkaBundle\Annotation\SerializeAndDeserialize');
+
+            if (!is_null($deserializeAnno) && !is_null($serializeAndDeserializeAnno)) {
+                throw new \RuntimeException("$property has both a Deserialize and a SerializeAndDeserialize annotation set - remove one.");
+            }
+
+            $propAnnotation = $deserializeAnno ? $deserializeAnno : $serializeAndDeserializeAnno;
+
             $propAnnotation = $this->reader->getPropertyAnnotation($property, 'AC\KalinkaBundle\Annotation\Deserialize');
             if ($propAnnotation) {
                 // TODO why is it sometimes 'action' and sometimes 'value'?
