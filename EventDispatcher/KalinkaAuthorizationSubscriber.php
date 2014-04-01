@@ -98,7 +98,7 @@ class KalinkaAuthorizationSubscriber implements EventSubscriberInterface
                 }
                 $guard = $defaultGuard;
                 // TODO: use property guard if one is set in the annotation
-                $allowed = $this->auth->can($action, $guard);
+                $allowed = $this->auth->can($action, $guard, $object);
             } else {
                 // what to do if there is no property annotation? Default to show, or hide?
                 // currently defaulting to show. It might make more sense to make
@@ -107,13 +107,13 @@ class KalinkaAuthorizationSubscriber implements EventSubscriberInterface
             }
             if (!$allowed) {
                 $propertyMetadata = $classMetadata->propertyMetadata[$property->name];
-                print_r($propertyMetadata);
+                // print_r($propertyMetadata);
                 // TODO true if there is a configured setter
-                print_r(is_null($propertyMetadata->setter));
+                // print_r(is_null($propertyMetadata->setter));
                 if (isset($propertyMetadata->setter)) {
                     $setter = $propertyMetadata->setter(null);
                     $object->$setter(null);
-                    print_r('gogogogo');
+                    // print_r('gogogogo');
                 } else {
                     // use reflection
                     $property->setAccessible(true);
