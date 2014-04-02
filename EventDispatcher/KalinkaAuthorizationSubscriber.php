@@ -42,16 +42,8 @@ class KalinkaAuthorizationSubscriber implements EventSubscriberInterface
     public function onPreSerialize(PreSerializeEvent $event)
     {
         $object = $event->getObject();
-
-
-        // Theoretically, I should be able to use the metadata stack to find out if there are configured getters/setters etc and use those in preference to reflection.
-        // but the metaDataStack here is empty...
-        // $metaDataStack = $event->getContext()->getMetadataStack();
-        // print_r($metaDataStack);
-        // $propertyMetadata = $metaDataStack[count($metaDataStack) - 2];
-        // $instance = $propertyMetadata->reflection->getValue($object);
-        // print_r($instance);
-
+        $factory = $event->getContext()->getMetadataFactory();
+        $classMetadata = $factory->getMetadataForClass(get_class($object));
         $reflObject = new \ReflectionObject($event->getObject());
         $properties = ($reflObject->getProperties());
         $defaultGuardAnnotation = $this->reader->getClassAnnotation(
@@ -89,7 +81,7 @@ class KalinkaAuthorizationSubscriber implements EventSubscriberInterface
                 }
                 $guard = $defaultGuard;
                 // TODO: use property guard if one is set in the annotation
-                $allowed = $this->auth->can($action, $guard);
+                $allowed = $this->auth->can($action, $guard, $object);
             } else {
                 // what to do if there is no property annotation? Default to show, or hide?
                 // currently defaulting to show. It might make more sense to make
@@ -97,9 +89,13 @@ class KalinkaAuthorizationSubscriber implements EventSubscriberInterface
                 $allowed = true;
             }
             if (!$allowed) {
+                $propertyMetadata = $classMetadata->propertyMetadata[$property->name];
+                // print_r($propertyMetadata);
                 // TODO true if there is a configured setter
-                if (false) {
-                    // use the setter (null);
+                // print_r(is_null($propertyMetadata->setter));
+                if (isset($propertyMetadata->setter)) {
+                    $setter = $propertyMetadata->setter(null);
+                    $object->$setter(null);
                 } else {
                     // use reflection
                     $property->setAccessible(true);

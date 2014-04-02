@@ -42,6 +42,12 @@ class ContainerAwareRoleAuthorizer extends RoleAuthorizer
         parent::__construct($subject, $roles);
 
         $this->registerRolePolicies($rolePolicies);
+        if (!is_null($anonRole)) {
+            $this->registerRolePolicies([$anonRole => []]);
+        }
+        if (!is_null($authRole)) {
+            $this->registerRolePolicies([$authRole => []]);
+        }
     }
 
     public function can($action, $resType, $guardObject = null)
