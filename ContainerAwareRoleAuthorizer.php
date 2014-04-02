@@ -61,7 +61,6 @@ class ContainerAwareRoleAuthorizer extends RoleAuthorizer
             }
         }
 
-        // TODO: should $guardObject ever be null here?
         return parent::can($action, $resType, $guardObject);
     }
 
