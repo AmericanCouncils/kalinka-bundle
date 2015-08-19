@@ -6,6 +6,7 @@ use AC\Kalinka\Authorizer\RoleAuthorizer;
 use Symfony\Component\Security\Core\SecurityContextInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\Security\Core\Authentication\Token\AnonymousToken;
+use Symfony\Component\HttpFoundation\RequestInterface;
 
 /**
  * This class has a container, and a map of available guard services, so it can load and register
@@ -16,6 +17,7 @@ class ContainerAwareRoleAuthorizer extends RoleAuthorizer
     private $container;
     private $guardMap = [];
     private $loadedTypes = [];
+    private $hasBegunActionPhase = false;
 
     public function __construct(SecurityContextInterface $context, ContainerInterface $container, $rolePolicies = [], $anonRole = null, $authRole = null)
     {
@@ -48,6 +50,20 @@ class ContainerAwareRoleAuthorizer extends RoleAuthorizer
         if (!is_null($authRole)) {
             $this->registerRolePolicies([$authRole => []]);
         }
+    }
+
+    public function beginActionPhase(RequestInterface $req)
+    {
+        if (true === $this->hasBegunActionPhase) {
+            throw new \LogicException("Kalinka action phase has already begun.");
+        }
+
+        $this->hasBegunActionPhase = true;
+    }
+
+    public function hasBegunActionPhase()
+    {
+        return $this->hasBegunActionPhase;
     }
 
     public function can($action, $resType, $guardObject = null)
