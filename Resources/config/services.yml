@@ -10,6 +10,13 @@ services:
         tags:
             - { name: kalinka.authorizer, tag: default }
 
+    kalinka.hypothetical_request_subscriber:
+        class: AC\KalinkaBundle\EventDispatcher\HypotheticalRequestSubscriber
+        arguments:
+            - @kalinka.authorizer
+        tags:
+            - { name: kernel.event_subscriber }
+
     jms_serializer.subscriber.document:
         class: AC\KalinkaBundle\EventDispatcher\KalinkaAuthorizationSubscriber
         arguments: [@kalinka.authorizer, @annotation_reader]

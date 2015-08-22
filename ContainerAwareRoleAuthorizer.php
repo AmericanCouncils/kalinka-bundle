@@ -7,6 +7,7 @@ use Symfony\Component\Security\Core\SecurityContextInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\Security\Core\Authentication\Token\AnonymousToken;
 use Symfony\Component\HttpFoundation\RequestInterface;
+use AC\KalinkaBundle\Exception\AuthorizationDeniedException;
 
 /**
  * This class has a container, and a map of available guard services, so it can load and register
@@ -59,11 +60,24 @@ class ContainerAwareRoleAuthorizer extends RoleAuthorizer
         }
 
         $this->hasBegunActionPhase = true;
+
+        if ($req instanceof HypotheticalRequest) {
+            throw new HypotheticalRequestSuccessException();
+        }
     }
 
     public function hasBegunActionPhase()
     {
         return $this->hasBegunActionPhase;
+    }
+
+    public function must($action, $resType, $guardObject = null)
+    {
+        if (!$this->can($action, $resType, $guardObject)) {
+            throw new AuthorizationDeniedException();
+        }
+
+        return true;
     }
 
     public function can($action, $resType, $guardObject = null)

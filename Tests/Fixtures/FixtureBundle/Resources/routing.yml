@@ -1,3 +1,7 @@
 test_routes:
     resource: "@FixtureBundle/Controllers.php"
     type:     annotation
+
+check_route:
+    path: '/check-hypothetical'
+    defaults:  { _controller: AC\KalinkaBundle\Controller\HypotheticalCheckController::checkHypotheticalRoutes }

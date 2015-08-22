@@ -4,10 +4,14 @@ namespace AC\KalinkaBundle\EventDispatcher;
 
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpKernel\Event\GetResponseEvent;
-use Symfony\Component\HttpKernel\Event\GetResponseForControllerResultEvent;
+use Symfony\Component\HttpKernel\Event\FilterResponseEvent;
 use AC\KalinkaBundle\ContainerAwareRoleAuthorizer;
 use AC\KalinkaBundle\HypotheticalRequest;
 
+/**
+ * Checks the request/response to ensure that HypotheticalRequest instances
+ * were handled properly.
+ */
 class HypotheticalRequestSubscriber implements EventSubscriberInterface
 {
     private $kalinka;
@@ -48,7 +52,7 @@ class HypotheticalRequestSubscriber implements EventSubscriberInterface
         }
     }
 
-    public function onKernelResponse(GetResponseForControllerResultEvent $e)
+    public function onKernelResponse(FilterResponseEvent $e)
     {
         $req = $e->getRequest();
 

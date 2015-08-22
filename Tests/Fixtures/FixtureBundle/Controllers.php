@@ -5,6 +5,7 @@ namespace AC\KalinkaBundle\Tests\Fixtures\FixtureBundle;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\HttpKernelInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Symfony\Component\HttpKernel\Exception\HttpException;
@@ -12,6 +13,7 @@ use JMS\Serializer\SerializationContext;
 use JMS\Serializer\DeserializationContext;
 use AC\KalinkaBundle\Tests\Fixtures\FixtureBundle\Entity\Document;
 use AC\KalinkaBundle\Tests\Fixtures\FixtureBundle\Entity\Robot;
+use AC\KalinkaBundle\HypotheticalRequest;
 
 /**
  * These controller routes are called by various tests.
@@ -132,5 +134,47 @@ class Controllers extends Controller
 
         return new Response($serialized);
 
+    }
+
+    /**
+     * @Route("/hypotheticable/good-success", defaults={"_kalinka_hypotheticable"=true})
+     * @Method("POST")
+     */
+    public function goodHypotheticablePassAction(Request $req)
+    {
+        $auth = $this->get('kalinka.authorizer');
+
+        $auth->beginActionPhase($req);
+
+        throw new \LogicException('This point should not have been reached.');
+    }
+
+    /**
+     * @Route("/hypotheticable/good-fail", defaults={"_kalinka_hypotheticable"=true})
+     * @Method("POST")
+     */
+    public function goodHypotheticableFailAction(Request $req)
+    {
+        $this->get('kalinka.authorizer')->must('non-existing-check');
+    }
+
+    /**
+     * @Route("/hypotheticable/bad", defaults={"_kalinka_hypotheticable"=true})
+     * @Method("POST")
+     */
+    public function badHypotheticableAction()
+    {
+        $auth = $this->get('kalinka.authorizer');
+
+        return new Response("{'foo':'bar'}");
+    }
+
+    /**
+     * @Route("/hypotheticable/but-not-really")
+     * @Method("POST")
+     */
+    public function nonHypotheticableAction()
+    {
+        throw new \LogicException('This point should not have been reached.');
     }
 }
