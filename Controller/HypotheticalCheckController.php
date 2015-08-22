@@ -15,12 +15,12 @@ class HypotheticalCheckController extends Controller
 {
     public function checkHypotheticalRoutes(Request $req)
     {
-        \dump($req->getContent());
+
         $data = json_decode($req->getContent(), true);
         if (is_null($data)) {
             throw new HttpException(400, "Could not parse json.");
         }
-        \dump($data);
+
         if (!isset($data['checks']) || !is_array($data['checks'])) {
             throw new HttpException(400, "A 'checks' property containing an array of routes to check is required.");
         }

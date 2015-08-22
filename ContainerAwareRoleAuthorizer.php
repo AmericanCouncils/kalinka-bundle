@@ -6,9 +6,9 @@ use AC\Kalinka\Authorizer\RoleAuthorizer;
 use Symfony\Component\Security\Core\SecurityContextInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\Security\Core\Authentication\Token\AnonymousToken;
-use Symfony\Component\HttpFoundation\RequestInterface;
+use Symfony\Component\HttpFoundation\Request;
 use AC\KalinkaBundle\Exception\AuthorizationDeniedException;
-
+use AC\KalinkaBundle\Exception\HypotheticalRequestSuccessException;
 /**
  * This class has a container, and a map of available guard services, so it can load and register
  * guard instances on demand only as needed.
@@ -53,7 +53,7 @@ class ContainerAwareRoleAuthorizer extends RoleAuthorizer
         }
     }
 
-    public function beginActionPhase(RequestInterface $req)
+    public function beginActionPhase(Request $req)
     {
         if (true === $this->hasBegunActionPhase) {
             throw new \LogicException("Kalinka action phase has already begun.");

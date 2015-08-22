@@ -155,7 +155,7 @@ class Controllers extends Controller
      */
     public function goodHypotheticableFailAction(Request $req)
     {
-        $this->get('kalinka.authorizer')->must('non-existing-check');
+        $this->get('kalinka.authorizer')->must('befriend', 'robot');
     }
 
     /**

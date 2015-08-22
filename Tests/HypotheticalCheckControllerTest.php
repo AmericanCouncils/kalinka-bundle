@@ -9,7 +9,7 @@ use AC\KalinkaBundle\Tests\Fixtures\FixtureBundle\Entity as Fixtures;
 
 class HypotheticalCheckControllerTest extends WebTestCase
 {
-    private function call($json)
+    private function call($data)
     {
         return static::createClient()->request(
             'POST',
@@ -17,13 +17,18 @@ class HypotheticalCheckControllerTest extends WebTestCase
             [],
             [],
             ['CONTENT_TYPE' => 'application/json'],
-            $json
+            json_encode($data)
         );
     }
 
     public function testCheckGoodHypotheticableRoutes()
     {
-        $response = $this->call("{'checks':['POST /hypotheticable/good-success','POST /hypotheticable/good-fail']}");
+        $response = $this->call([
+            'checks' => [
+                'POST /hypotheticable/good-success',
+                'POST /hypotheticable/good-fail'
+            ]
+        ]);
 
         $res = json_decode($response->getContent(), true);
         $this->assertSame(200, $res['checks']['POST /hypotheticable/good-success']);
