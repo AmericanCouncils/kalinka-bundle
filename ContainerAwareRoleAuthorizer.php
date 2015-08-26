@@ -33,13 +33,17 @@ class ContainerAwareRoleAuthorizer extends RoleAuthorizer
             $subject = $context->getToken()->getUser();
             $roles = array_map(function ($item) { return $item->getRole(); }, $token->getRoles());
 
-            if (($token instanceof AnonymousToken) && $anonRole) {
-                $roles[] = $anonRole;
-            } elseif ($token->isAuthenticated() && $authRole) {
-                $roles[] = $authRole;
+            if ($token instanceof AnonymousToken) {
+                if ($anonRole) {
+                    $roles[] = $anonRole;
+                }
+            } else {
+                if ($authRole) {
+                    $roles[] = $authRole;
+                }
             }
-        } elseif ($anonRole) {
-            $roles[] = $anonRole;
+        } else {
+            throw new \LogicException("Cannot initialize ContainerAwareRoleAuthorizer before security token setup");
         }
 
         parent::__construct($subject, $roles);
