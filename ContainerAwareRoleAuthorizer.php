@@ -6,7 +6,9 @@ use AC\Kalinka\Authorizer\RoleAuthorizer;
 use Symfony\Component\Security\Core\SecurityContextInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\Security\Core\Authentication\Token\AnonymousToken;
-
+use Symfony\Component\HttpFoundation\Request;
+use AC\KalinkaBundle\Exception\AuthorizationDeniedException;
+use AC\KalinkaBundle\Exception\HypotheticalRequestSuccessException;
 /**
  * This class has a container, and a map of available guard services, so it can load and register
  * guard instances on demand only as needed.
@@ -16,6 +18,7 @@ class ContainerAwareRoleAuthorizer extends RoleAuthorizer
     private $container;
     private $guardMap = [];
     private $loadedTypes = [];
+    private $hasBegunActionPhase = false;
 
     public function __construct(SecurityContextInterface $context, ContainerInterface $container, $rolePolicies = [], $anonRole = null, $authRole = null)
     {
@@ -30,13 +33,17 @@ class ContainerAwareRoleAuthorizer extends RoleAuthorizer
             $subject = $context->getToken()->getUser();
             $roles = array_map(function ($item) { return $item->getRole(); }, $token->getRoles());
 
-            if (($token instanceof AnonymousToken) && $anonRole) {
-                $roles[] = $anonRole;
-            } elseif ($token->isAuthenticated() && $authRole) {
-                $roles[] = $authRole;
+            if ($token instanceof AnonymousToken) {
+                if ($anonRole) {
+                    $roles[] = $anonRole;
+                }
+            } else {
+                if ($authRole) {
+                    $roles[] = $authRole;
+                }
             }
-        } elseif ($anonRole) {
-            $roles[] = $anonRole;
+        } else {
+            throw new \LogicException("Cannot initialize ContainerAwareRoleAuthorizer before security token setup");
         }
 
         parent::__construct($subject, $roles);
@@ -48,6 +55,33 @@ class ContainerAwareRoleAuthorizer extends RoleAuthorizer
         if (!is_null($authRole)) {
             $this->registerRolePolicies([$authRole => []]);
         }
+    }
+
+    public function beginActionPhase(Request $req)
+    {
+        if (true === $this->hasBegunActionPhase) {
+            throw new \LogicException("Kalinka action phase has already begun.");
+        }
+
+        $this->hasBegunActionPhase = true;
+
+        if ($req instanceof HypotheticalRequest) {
+            throw new HypotheticalRequestSuccessException();
+        }
+    }
+
+    public function hasBegunActionPhase()
+    {
+        return $this->hasBegunActionPhase;
+    }
+
+    public function must($action, $resType, $guardObject = null)
+    {
+        if (!$this->can($action, $resType, $guardObject)) {
+            throw new AuthorizationDeniedException();
+        }
+
+        return true;
     }
 
     public function can($action, $resType, $guardObject = null)
