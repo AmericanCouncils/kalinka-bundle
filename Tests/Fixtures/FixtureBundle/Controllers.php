@@ -71,8 +71,6 @@ class Controllers extends Controller
      **/
     public function createRobotAction(Request $req)
     {
-        throw new \LogicException("Robots != pizza.");
-
         $auth = $this->get('kalinka.authorizer');
         $serializer = $this->get('jms_serializer');
         // $guard = $this->get('app.guard.robot');
