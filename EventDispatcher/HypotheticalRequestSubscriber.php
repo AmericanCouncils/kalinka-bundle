@@ -56,7 +56,7 @@ class HypotheticalRequestSubscriber implements EventSubscriberInterface
     {
         $req = $e->getRequest();
 
-        if ($req instanceof HypotheticalRequest && !$kalinka->hasBegunActionPhase()) {
+        if ($req instanceof HypotheticalRequest && !$this->kalinka->hasBegunActionPhase()) {
             throw new \LogicException("No action phase was initiated during a hypothetical request.");
         }
     }

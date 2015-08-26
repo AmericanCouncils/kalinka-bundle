@@ -11,7 +11,8 @@ class HypotheticalCheckControllerTest extends WebTestCase
 {
     private function call($data)
     {
-        return static::createClient()->request(
+        $client = static::createClient();
+        $client->request(
             'POST',
             '/check-hypothetical',
             [],
@@ -19,6 +20,8 @@ class HypotheticalCheckControllerTest extends WebTestCase
             ['CONTENT_TYPE' => 'application/json'],
             json_encode($data)
         );
+
+        return $client->getResponse();
     }
 
     public function testCheckGoodHypotheticableRoutes()
@@ -30,18 +33,29 @@ class HypotheticalCheckControllerTest extends WebTestCase
             ]
         ]);
 
-        $res = json_decode($response->getContent(), true);
-        $this->assertSame(200, $res['checks']['POST /hypotheticable/good-success']);
-        $this->assertSame(403, $res['checks']['POST /hypotheticable/good-fail']);
+        $data = json_decode($response->getContent(), true);
+        $this->assertSame(200, $response->getStatusCode());
+        $this->assertSame(200, $data['checks']['POST /hypotheticable/good-success']);
+        $this->assertSame(403, $data['checks']['POST /hypotheticable/good-fail']);
     }
 
     public function testCheckBadHypotheticableRoute()
     {
-
+        $this->setExpectedException('LogicException');
+        $response = $this->call([
+            'checks' => [
+                'POST /hypotheticable/bad',
+            ]
+        ]);
     }
 
     public function testCheckNonHypotheticableRoute()
     {
-
+        $this->setExpectedException('LogicException');
+        $response = $this->call([
+            'checks' => [
+                'POST /hypotheticable/but-not-really',
+            ]
+        ]);
     }
 }

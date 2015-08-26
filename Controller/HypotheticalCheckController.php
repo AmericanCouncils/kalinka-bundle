@@ -31,7 +31,7 @@ class HypotheticalCheckController extends Controller
             list($method, $path) = explode(' ', $check);
 
             if (empty($path) || empty($method)) {
-                throw new HttpException(400, sprintf("Each route must be in the format [<method> <path>].  Received: [%]", $check));
+                throw new HttpException(400, sprintf("Each route must be in the format [<method> <path>].  Received: [%s]", $check));
             }
 
             $sub = HypotheticalRequest::create($path, strtoupper($method));
@@ -43,7 +43,7 @@ class HypotheticalCheckController extends Controller
                 $responseMap[$check] = 200;
                 $caught = true;
             } catch (HttpException $e) {
-                $responseMap[$check] = $e->getCode();
+                $responseMap[$check] = $e->getStatusCode();
                 $caught = true;
             } // Let other types of exceptions bubble all the way up
 
@@ -52,6 +52,6 @@ class HypotheticalCheckController extends Controller
             }
         }
 
-        return new Response(200, json_encode($responseMap), ['content-type', 'application/json']);
+        return new Response(json_encode(['checks' => $responseMap]), 200, ['content-type' => 'application/json']);
     }
 }
