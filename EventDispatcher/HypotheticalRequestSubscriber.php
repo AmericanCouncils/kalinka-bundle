@@ -3,9 +3,9 @@
 namespace AC\KalinkaBundle\EventDispatcher;
 
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpKernel\Event\GetResponseEvent;
 use Symfony\Component\HttpKernel\Event\FilterResponseEvent;
-use AC\KalinkaBundle\ContainerAwareRoleAuthorizer;
 use AC\KalinkaBundle\HypotheticalRequest;
 
 /**
@@ -14,11 +14,11 @@ use AC\KalinkaBundle\HypotheticalRequest;
  */
 class HypotheticalRequestSubscriber implements EventSubscriberInterface
 {
-    private $kalinka;
+    private $container;
 
-    public function __construct(ContainerAwareRoleAuthorizer $kalinka)
+    public function __construct(ContainerInterface $container)
     {
-        $this->kalinka = $kalinka;
+        $this->container = $container;
     }
 
     public static function getSubscribedEvents()
@@ -56,7 +56,7 @@ class HypotheticalRequestSubscriber implements EventSubscriberInterface
     {
         $req = $e->getRequest();
 
-        if ($req instanceof HypotheticalRequest && !$this->kalinka->hasBegunActionPhase()) {
+        if ($req instanceof HypotheticalRequest && !$this->container->get('kalinka.authorizer')->hasBegunActionPhase()) {
             throw new \LogicException("No action phase was initiated during a hypothetical request.");
         }
     }

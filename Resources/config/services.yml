@@ -13,7 +13,7 @@ services:
     kalinka.hypothetical_request_subscriber:
         class: AC\KalinkaBundle\EventDispatcher\HypotheticalRequestSubscriber
         arguments:
-            - @kalinka.authorizer
+            - @service_container
         tags:
             - { name: kernel.event_subscriber }
 
